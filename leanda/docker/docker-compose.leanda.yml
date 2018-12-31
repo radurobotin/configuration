@@ -9,7 +9,7 @@ services:
         image: leanda/ui:${TAG_VERSION-latest}
         environment:
         - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL}
-        - OSDR_API_URL=${OSDR_API_URL}
+        - CORE_API_URL=${CORE_API_URL}
         - BLOB_STORAGE_API_URL=${BLOB_STORAGE_API_URL}
         - IMAGING_URL=${IMAGING_URL}
         - SIGNALR_URL=${SIGNALR_URL}
@@ -386,7 +386,7 @@ services:
     #     - OSDR_ML_MODELER_CLIENT_ID=osdr_ml_modeler
     #     - OSDR_RABBIT_MQ_ML_TRAINING_REPORTER_MAX_THREADS_NUMBER=32
     #     - OSDR_RABBIT_MQ_ML_TRAINING_REPORTER_PREFETCH_COUNT=32
-    #     - OSDR_API_URL=${OSDR_API_URL_UNESCAPED}
+    #     - CORE_API_URL=${CORE_API_URL_UNESCAPED}
     #     volumes:
     #     # TODO temporary hardcoded part
     #     - /home/logs:/logs/
@@ -449,7 +449,7 @@ services:
     #     - OSDR_ML_MODELER_CLIENT_ID=osdr_ml_modeler
     #     - OSDR_RABBIT_MQ_ML_SINGLE_STRUCTURE_PREDICTOR_MAX_THREADS_NUMBER=32
     #     - OSDR_RABBIT_MQ_ML_SINGLE_STRUCTURE_PREDICTOR_PREFETCH_COUNT=32
-    #     - API_MODELS_ENTITIES_URL=${OSDR_API_URL_UNESCAPED}/entities/models/public
+    #     - API_MODELS_ENTITIES_URL=${CORE_API_URL_UNESCAPED}/entities/models/public
     #     volumes:
     #     # TODO temporary hardcoded part
     #     - /home/logs:/logs/
