@@ -1,0 +1,207 @@
+version: '3'
+
+services:
+    eventstore:
+        image: eventstore/eventstore:release-4.0.2
+        #mem_limit: 2g
+        restart: always
+        container_name: osdr-dev-eventstore
+        ports:
+        - "2113:2113"
+        - "1113:1113"
+        environment:
+        - RUN_PROJECTIONS = All
+        volumes:
+        - data-eventstore:/var/lib/eventstore
+        networks:
+        - osdr-net-ext
+
+    redis:
+        image: redis:4-alpine
+        #mem_limit: 256m
+        restart: always
+        container_name: osdr-dev-redis
+        command: redis-server --appendonly yes
+        ports:
+        - "6379:6379"
+        volumes:
+        - data-redis:/data
+        networks:
+        - osdr-net-ext
+
+    rabbitmq:
+        image: leanda/rabbitmq
+        #mem_limit: 2g
+        restart: always
+        container_name: osdr-dev-rabbitmq
+        hostname: "rabbitmq-dev"
+        environment:
+        - RABBITMQ_DEFAULT_VHOST=osdr_dev
+        ports:
+        - "8282:15672"
+        - "5671:5671"
+        - "5672:5672"
+        volumes:
+        - data-rabbitmq:/var/lib/rabbitmq
+        networks:
+        - osdr-net-ext
+
+    mongo:
+        image: mongo:3.6
+        #mem_limit: 12g
+        restart: always
+        container_name: osdr-dev-mongo
+        ports:
+        - "27017:27017"
+        volumes:
+        - data-mongo-config:/data/configdb
+        - data-mongo-data:/data/db
+        networks:
+        - osdr-net-ext
+
+    postgres:
+      container_name: 'keycloak-postgres'
+      image: postgres
+      restart: always
+      environment:
+        POSTGRES_USER: keycloak
+        POSTGRES_PASSWORD: keycloak
+        POSTGRES_DATABASE: keycloak
+        POSTGRES_ROOT_PASSWORD: keycloak
+        pgdata: data-pstgresql
+      ports:
+      - '5432:5432'
+      networks:
+      - osdr-net-ext
+      volumes:
+      - data-pstgresql:/data
+
+    keycloak:
+        container_name: 'keycloak-server'
+        image: leanda/keycloak:latest
+        #restart: always
+        environment:
+          DB_VENDOR: POSTGRES
+          KEYCLOAK_USER: admin
+          KEYCLOAK_PASSWORD: admin
+          POSTGRES_USER: keycloak
+          POSTGRES_PASSWORD: keycloak
+          POSTGRES_PORT_5432_TCP_ADDR: postgres
+          POSTGRES_DATABASE: keycloak
+          JDBC_PARAMS: 'connectTimeout=30'
+        ports:
+        - '18080:8080'
+        - '18443:8443'
+        volumes:
+        - data-keycloak:/data
+        networks:
+        - osdr-net-ext
+        depends_on:
+        - postgres
+
+    # filebeat:
+    #     image: docker.scidatasoft.com/filebeat
+    #     #mem_limit: 128m
+    #     restart: always
+    #     container_name: osdr-dev-filebeat
+    #     volumes:
+    #     - /home/logs:/logs/
+    #     networks:
+    #     - osdr-net-ext
+    #     depends_on:
+    #     - logstash
+
+    # logstash:
+    #     image: docker.scidatasoft.com/logstash
+    #     #mem_limit: 1g
+    #     restart: always
+    #     container_name: osdr-dev-logstash
+    #     command: -f /config-dir/logstash.conf
+    #     ports:
+    #     - "5044:5044"
+    #     - "12201:12201"
+    #     - "12201:12201/udp"
+    #     - "12202:12202"
+    #     - "12202:12202/udp"
+    #     networks:
+    #     - osdr-net-ext
+    #     depends_on:
+    #     - elasticsearch
+
+    # kibana:
+    #     image: docker.elastic.co/kibana/kibana-oss:6.1.1
+    #     #mem_limit: 512m
+    #     restart: always
+    #     container_name: osdr-dev-kibana
+    #     environment:
+    #     - ELASTICSEARCH_URL:"elasticsearch:9201"
+    #     ports:
+    #     - "5661:5601"
+    #     networks:
+    #     - osdr-net-ext
+
+    # elasticsearch:
+    #     image: docker.scidatasoft.com/elasticsearch
+    #     #mem_limit: 10g
+    #     restart: always
+    #     container_name: osdr-dev-es
+    #     environment:
+    #     - discovery.type=single-node
+    #     - "ES_JAVA_OPTS=-Xms8g -Xmx8g"
+    #     volumes:
+    #     - data-elasticsearch:/usr/share/elasticsearch/data
+    #     ports:
+    #     - "9201:9201"
+    #     - "9200:9200"
+    #     - "9301:9300"
+    #     networks:
+    #     - osdr-net-ext
+
+    # heartbeat:
+    #     restart: always
+    #     image: docker.scidatasoft.com/heartbeat:latest
+    #     #mem_limit: 128m
+    #     container_name: osdr-dev-heartbeat
+    #     environment:
+    #     - API_URL=http://nginx
+    #     - UI_URL=http://osdr-ui
+    #     - BACKEND_HOST=mulanback.rsc-us.org
+    #     networks:
+    #     - osdr-net-ext
+
+    # nginx:
+    #     restart: always
+    #     #mem_limit: 128m
+    #     image: docker.scidatasoft.com/nginx
+    #     container_name: osdr-dev-nginx
+    #     ports:
+    #     - "8086:80"
+    #     networks:
+    #     - osdr-net-ext
+
+    # elasticsearch-curator:
+    #     container_name: osdr-dev-elasticsearch-curator
+    #     image: docker.scidatasoft.com/elasticsearch-curator:latest
+    #     #mem_limit: 128m
+    #     environment:
+    #     - LOG_LEVEL = INFO
+    #     - LOG_FORMAT = default
+    #     - BLACK_LIST = ['elasticsearch', 'urllib3']
+    #     command: --config config.yml action.yml
+    #     networks:
+    #     - osdr-net-ext
+
+volumes:
+    data-eventstore:
+    data-redis:
+    data-rabbitmq:
+    data-elasticsearch:
+    data-mongo-config:
+    data-mongo-data:
+    data-keycloak:
+    data-pstgresql:
+
+networks:
+    osdr-net-ext:
+        external:
+            name: osdr-sys-net

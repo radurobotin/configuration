@@ -1,0 +1,582 @@
+#` This docker-compose is for running OSDR services for SSP
+
+version: '3'
+
+services:
+    osdr-ui:
+        #restart: always
+        container_name: osdr-ui
+        image: leanda/ui:${TAG_VERSION-latest}
+        environment:
+        - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL}
+        - OSDR_API_URL=${OSDR_API_URL}
+        - BLOB_STORAGE_API_URL=${BLOB_STORAGE_API_URL}
+        - IMAGING_URL=${IMAGING_URL}
+        - SIGNALR_URL=${SIGNALR_URL}
+        - METADATA_URL=${METADATA_URL}
+        - PROXY_JSMOL_URL=${PROXY_JSMOL_URL}
+        - KETCHER_URL=${KETCHER_URL}
+        - REALM=${REALM}
+        networks:
+        - osdr-net-ext
+        ports:
+        - "8080:80"
+
+    blob-storage-api:
+        restart: always
+        container_name: osdr-blob-storage-api
+        image: leanda/blob-storage-webapi:${TAG_VERSION-latest}
+        environment:
+        - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL_UNESCAPED}
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - SWAGGER_BASEPATH=/blob/v1
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        networks:
+        - osdr-net-ext
+        ports:
+        - "18006:18006"
+
+    # notification-service-processing:
+    #     restart: always
+    #     container_name: notification-service-processing
+    #     image: docker.scidatasoft.com/notification-serivce-processing:${TAG_VERSION-latest}
+    #     environment:
+    #     - OSDR_LOG_FOLDER=/logs
+    #     volumes:
+    #     - ${OSDR_LOG_FOLDER}:/logs
+    #     networks:
+    #     - osdr-net-ext
+
+    # imaging-web-api:
+    #     restart: always
+    #     container_name: imaging-web-api
+    #     image: docker.scidatasoft.com/imaging-web-api:${TAG_VERSION-latest}
+    #     environment:
+    #     - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL_UNESCAPED}
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     - SWAGGER_BASEPATH=/imaging/v1
+    #     volumes:
+    #     - ${OSDR_LOG_FOLDER}:/logs
+    #     networks:
+    #     - osdr-net-ext
+    #     ports:
+    #     - "7972:18006"
+
+    osdr-service-web-api:
+        restart: always
+        container_name: osdr-service-web-api
+        image: leanda/core-web-api:${TAG_VERSION-latest}
+        environment:
+        - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL_UNESCAPED}
+        - OSDR_REDIS=redis
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore:1113
+        - OSDR_ES=http://elasticsearch:9200
+        - SWAGGER_BASEPATH=/osdr/v1
+        - OSDR_LOG_LEVEL=${OSDR_LOG_LEVEL}
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        networks:
+        - osdr-net-ext
+        ports:
+        - "28611:18006"
+
+    # metadata-storage-web-api:
+    #     restart: always
+    #     container_name: metadata-storage-web-api
+    #     image: docker.scidatasoft.com/metadata-storage-web-api:${TAG_VERSION-latest}
+    #     environment:
+    #     - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL_UNESCAPED}
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     volumes:
+    #     - ${OSDR_LOG_FOLDER}:/logs
+    #     networks:
+    #     - osdr-net-ext
+    #     ports:
+    #     - "28612:18006"
+
+    # imaging-persistence:
+    #     restart: always
+    #     container_name: imaging-persistence
+    #     image: docker.scidatasoft.com/imaging-persistence:${TAG_VERSION-latest}
+    #     environment:
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     volumes:
+    #     - ${OSDR_LOG_FOLDER}:/logs
+    #     networks:
+    #     - osdr-net-ext
+    #     ports:
+    #     - "12020:12020"
+
+    # metadata-storage-processing:
+    #     restart: always
+    #     container_name: metadata-storage-processing
+    #     image: docker.scidatasoft.com/metadata-storage-processing:${TAG_VERSION-latest}
+    #     environment:
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     volumes:
+    #     - ${OSDR_LOG_FOLDER}:/logs
+    #     networks:
+    #     - osdr-net-ext
+    #     ports:
+    #     - "11050:11050"
+
+    # osdr-indexing:
+    #     restart: always
+    #     container_name: osdr-indexing
+    #     image: docker.scidatasoft.com/indexing:${TAG_VERSION-latest}
+    #     environment:
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     - OSDR_ES=http://elasticsearch:9200
+    #     volumes:
+    #     - ${OSDR_LOG_FOLDER}:/logs
+    #     networks:
+    #     - osdr-net-ext
+    #     ports:
+    #     - "11090:11090"
+
+    osdr-service-backend:
+        restart: always
+        container_name: osdr-service-backend
+        image: leanda/core-backend:${TAG_VERSION-latest}
+        environment:
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore:1113
+        - OSDR_REDIS=redis
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        networks:
+        - osdr-net-ext
+        ports:
+        - "11030:11030"
+
+    osdr-service-frontend:
+        restart: always
+        container_name: osdr-service-frontend
+        image: leanda/core-frontend:${TAG_VERSION-latest}
+        environment:
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore:1113
+        - OSDR_REDIS=redis
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        networks:
+        - osdr-net-ext
+        ports:
+        - "11020:11020"
+
+    osdr-service-sagahost:
+        restart: always
+        container_name: osdr-service-sagahost
+        image: leanda/core-sagahost:${TAG_VERSION-latest}
+        environment:
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        networks:
+        - osdr-net-ext
+        ports:
+        - "11010:11010"
+
+    osdr-service-persistence:
+        restart: always
+        container_name: osdr-service-persistence
+        image: leanda/core-persistence:${TAG_VERSION-latest}
+        environment:
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        networks:
+        - osdr-net-ext
+        ports:
+        - "11000:11000"
+
+    # osdr-ml-modeler:
+    #     restart: always
+    #     container_name: osdr-ml-modeler
+    #     image: docker.scidatasoft.com/osdr-ml-modeler:${TAG_VERSION-latest}
+    #     environment:
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_TEMP_FILES_FOLDER=/temp
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     - OSDR_BLOB_SERVICE_TOKEN_URL=${IDENTITY_SERVER_URL_UNESCAPED}/protocol/openid-connect/token
+    #     - OSDR_BLOB_SERVICE_URL=${BLOB_STORAGE_API_URL_UNESCAPED}
+    #     - OSDR_ML_MODELER_CLIENT_SECRET=52461d3c-7f0b-4b72-a508-1e7febaacabb
+    #     - OSDR_ML_MODELER_CLIENT_ID=osdr_ml_modeler
+    #     - OSDR_RABBIT_MQ_ML_MODELER_MAX_THREADS_NUMBER=32
+    #     - OSDR_RABBIT_MQ_ML_MODELER_PREFETCH_COUNT=32
+    #     volumes:
+    #     # TODO temporary hardcoded part
+    #     - /home/logs:/logs/
+    #     - /home/temp/ml_services:/temp/
+    #     # - ${OSDR_LOG_FOLDER}:/logs
+    #     # - ${OSDR_TEMP_FILES_FOLDER}:/temp
+    #     networks:
+    #     - osdr-net-ext
+    #     depends_on:
+    #     - blob-storage-api
+    #     command: >
+    #       /bin/bash -c "
+    #         sleep 5;
+    #         python ./model_trainer.py;
+    #       "
+
+    # osdr-ml-predictor:
+    #     restart: always
+    #     container_name: osdr-ml-predictor
+    #     image: docker.scidatasoft.com/osdr-ml-predictor:${TAG_VERSION-latest}
+    #     environment:
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_TEMP_FILES_FOLDER=/temp
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     - OSDR_BLOB_SERVICE_TOKEN_URL=${IDENTITY_SERVER_URL_UNESCAPED}/protocol/openid-connect/token
+    #     - OSDR_BLOB_SERVICE_URL=${BLOB_STORAGE_API_URL_UNESCAPED}
+    #     - OSDR_ML_MODELER_CLIENT_SECRET=52461d3c-7f0b-4b72-a508-1e7febaacabb
+    #     - OSDR_ML_MODELER_CLIENT_ID=osdr_ml_modeler
+    #     - OSDR_RABBIT_MQ_ML_QUEUE_CREATE_PREDICTION_COMMAND=Sds.MachineLearning.Integration.Domain.Commands.PredictProperties
+    #     - OSDR_RABBIT_MQ_ML_ECHANGE_PREDICTION_CREATED_EVENT=Sds.MachineLearning.Integration.Domain.Events.PropertiesPredicted
+    #     - OSDR_RABBIT_MQ_ML_ECHANGE_PREDICTION_FAILED_EVENT=Sds.MachineLearning.Integration.Domain.Events.PropertiesPredictionFailed
+    #     - OSDR_RABBIT_MQ_ML_ECHANGE_PREDICTION_REPORT_CREATED_EVENT=Sds.MachineLearning.Integration.Domain.Events.PropertiesPredictionReportCreated
+    #     - OSDR_RABBIT_MQ_ML_PREDICTOR_MAX_THREADS_NUMBER=32
+    #     - OSDR_RABBIT_MQ_ML_PREDICTOR_PREFETCH_COUNT=32
+    #     volumes:
+    #     # TODO temporary hardcoded part
+    #     - /home/logs:/logs/
+    #     - /home/temp/ml_services:/temp/
+    #     # - ${OSDR_LOG_FOLDER}:/logs
+    #     # - ${OSDR_TEMP_FILES_FOLDER}:/temp
+    #     networks:
+    #     - osdr-net-ext
+    #     depends_on:
+    #     - blob-storage-api
+    #     command: >
+    #       /bin/bash -c "
+    #         sleep 5;
+    #         python ./properties_predictor.py;
+    #       "
+
+    # osdr-imaging-service:
+    #     restart: always
+    #     container_name: osdr-imaging-service
+    #     image: docker.scidatasoft.com/sds/osdr-imaging-service:${TAG_VERSION-latest}
+    #     environment:
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_TEMP_FILES_FOLDER=/temp
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+    #     - QUEUE_PREFETCH_SIZE=9
+    #     - EXECUTOR_THREAD_COUNT=3
+    #     volumes:
+    #     - ${OSDR_LOG_FOLDER}:/logs
+    #     - ${OSDR_TEMP_FILES_FOLDER}:/temp
+    #     networks:
+    #     - osdr-net-ext
+
+    chemical-file-parser-service:
+        restart: always
+        container_name: chemical-file-parser-service
+        image: leanda/chemical-file-parser:${TAG_VERSION-latest}
+        #mem_limit: 512m
+        environment:
+        - TZ=EST
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_TEMP_FILES_FOLDER=/temp
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+        - QUEUE_PREFETCH_SIZE=9
+        - EXECUTOR_THREAD_COUNT=3
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        - ${OSDR_TEMP_FILES_FOLDER}:/temp
+        networks:
+        - osdr-net-ext
+    
+    reaction-parser-service:
+        restart: always
+        container_name: reaction-file-parser
+        image: leanda/reaction-file-parser:${TAG_VERSION-latest}
+        #mem_limit: 512m
+        environment:
+        - TZ=EST
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_TEMP_FILES_FOLDER=/temp
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+        - QUEUE_PREFETCH_SIZE=9
+        - EXECUTOR_THREAD_COUNT=3
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        - ${OSDR_TEMP_FILES_FOLDER}:/temp
+        networks:
+        - osdr-net-ext
+
+    crystal-parser-service:
+        restart: always
+        container_name: crystal-file-parser
+        image: leanda/crystal-file-parser:${TAG_VERSION-latest}
+        #mem_limit: 512m
+        environment:
+        - TZ=EST
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_TEMP_FILES_FOLDER=/temp
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+        - QUEUE_PREFETCH_SIZE=9
+        - EXECUTOR_THREAD_COUNT=3
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        - ${OSDR_TEMP_FILES_FOLDER}:/temp
+        networks:
+        - osdr-net-ext
+
+    spectra-parser-service:
+        restart: always
+        container_name: spectra-file-parser
+        image: leanda/spectra-file-parser:${TAG_VERSION-latest}
+        #mem_limit: 512m
+        environment:
+        - TZ=EST
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_TEMP_FILES_FOLDER=/temp
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+        - QUEUE_PREFETCH_SIZE=9
+        - EXECUTOR_THREAD_COUNT=3
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        - ${OSDR_TEMP_FILES_FOLDER}:/temp
+        networks:
+        - osdr-net-ext
+
+    # osdr-ml-training-reporter:
+    #     restart: always
+    #     container_name: osdr-ml-training-reporter
+    #     image: docker.scidatasoft.com/osdr-ml-training-reporter:${TAG_VERSION-latest}
+    #     #mem_limit: 1g
+    #     environment:
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_TEMP_FILES_FOLDER=/temp
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     - OSDR_BLOB_SERVICE_TOKEN_URL=${IDENTITY_SERVER_URL_UNESCAPED}/protocol/openid-connect/token
+    #     - OSDR_BLOB_SERVICE_URL=${BLOB_STORAGE_API_URL_UNESCAPED}
+    #     - OSDR_ML_MODELER_CLIENT_SECRET=52461d3c-7f0b-4b72-a508-1e7febaacabb
+    #     - OSDR_ML_MODELER_CLIENT_ID=osdr_ml_modeler
+    #     - OSDR_RABBIT_MQ_ML_TRAINING_REPORTER_MAX_THREADS_NUMBER=32
+    #     - OSDR_RABBIT_MQ_ML_TRAINING_REPORTER_PREFETCH_COUNT=32
+    #     - OSDR_API_URL=${OSDR_API_URL_UNESCAPED}
+    #     volumes:
+    #     # TODO temporary hardcoded part
+    #     - /home/logs:/logs/
+    #     - /home/temp/ml_services:/temp/
+    #     # - ${OSDR_LOG_FOLDER}:/logs
+    #     # - ${OSDR_TEMP_FILES_FOLDER}:/temp
+    #     depends_on:
+    #     - blob-storage-api
+    #     networks:
+    #     - osdr-net-ext
+    #     command: >
+    #       /bin/bash -c "
+    #         sleep 5;
+    #         python ./report_generator.py;
+    #       "
+
+    # osdr-ml-training-optimizer:
+    #     restart: always
+    #     container_name: osdr-ml-training-optimizer
+    #     image: docker.scidatasoft.com/osdr-ml-training-optimizer:${TAG_VERSION-latest}
+    #     #mem_limit: 1g
+    #     environment:
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_TEMP_FILES_FOLDER=/temp
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     - OSDR_BLOB_SERVICE_TOKEN_URL=${IDENTITY_SERVER_URL_UNESCAPED}/protocol/openid-connect/token
+    #     - OSDR_BLOB_SERVICE_URL=${BLOB_STORAGE_API_URL_UNESCAPED}
+    #     - OSDR_ML_MODELER_CLIENT_SECRET=52461d3c-7f0b-4b72-a508-1e7febaacabb
+    #     - OSDR_ML_MODELER_CLIENT_ID=osdr_ml_modeler
+    #     - OSDR_RABBIT_MQ_ML_TRAINING_OPTIMIZER_MAX_THREADS_NUMBER=32
+    #     - OSDR_RABBIT_MQ_ML_TRAINING_OPTIMIZER_PREFETCH_COUNT=32
+    #     volumes:
+    #     # TODO temporary hardcoded part
+    #     - /home/logs:/logs/
+    #     - /home/temp/ml_services:/temp/
+    #     # - ${OSDR_LOG_FOLDER}:/logs
+    #     # - ${OSDR_TEMP_FILES_FOLDER}:/temp
+    #     depends_on:
+    #     - blob-storage-api
+    #     networks:
+    #     - osdr-net-ext
+    #     command: >
+    #       /bin/bash -c "
+    #         sleep 5;
+    #         python ./optimizer.py;
+    #       "
+
+    # osdr-ml-single-structure-predictor:
+    #     restart: always
+    #     container_name: osdr-ml-single-structure-predictor
+    #     image: docker.scidatasoft.com/osdr-ml-single-structure-predictor:${TAG_VERSION-latest}
+    #     #mem_limit: 36g
+    #     environment:
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_TEMP_FILES_FOLDER=/temp
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     - OSDR_BLOB_SERVICE_TOKEN_URL=${IDENTITY_SERVER_URL_UNESCAPED}/protocol/openid-connect/token
+    #     - OSDR_BLOB_SERVICE_URL=${BLOB_STORAGE_API_URL_UNESCAPED}
+    #     - OSDR_ML_MODELER_CLIENT_SECRET=52461d3c-7f0b-4b72-a508-1e7febaacabb
+    #     - OSDR_ML_MODELER_CLIENT_ID=osdr_ml_modeler
+    #     - OSDR_RABBIT_MQ_ML_SINGLE_STRUCTURE_PREDICTOR_MAX_THREADS_NUMBER=32
+    #     - OSDR_RABBIT_MQ_ML_SINGLE_STRUCTURE_PREDICTOR_PREFETCH_COUNT=32
+    #     - API_MODELS_ENTITIES_URL=${OSDR_API_URL_UNESCAPED}/entities/models/public
+    #     volumes:
+    #     # TODO temporary hardcoded part
+    #     - /home/logs:/logs/
+    #     - /home/temp/ml_services:/temp/
+    #     # - ${OSDR_LOG_FOLDER}:/logs
+    #     # - ${OSDR_TEMP_FILES_FOLDER}:/temp
+    #     depends_on:
+    #     - blob-storage-api
+    #     networks:
+    #     - osdr-net-ext
+    #     command: >
+    #       /bin/bash -c "
+    #         sleep 5;
+    #         python ./single_structure_predictor.py;
+    #       "
+
+    # osdr-feature-vectors-calculator:
+    #     restart: always
+    #     container_name: osdr-feature-vectors-calculator
+    #     image: docker.scidatasoft.com/osdr-feature-vectors-calculator:${TAG_VERSION-latest}
+    #     #mem_limit: 1g
+    #     environment:
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_TEMP_FILES_FOLDER=/temp
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     - OSDR_RABBIT_MQ_FEATURE_VECTOR_CALCULATOR_MAX_THREADS_NUMBER=32
+    #     - OSDR_RABBIT_MQ_FEATURE_VECTOR_CALCULATOR_PREFETCH_COUNT=32
+    #     - REDIS_EXPIRATION_TIME_SECONDS=43200
+    #     volumes:
+    #     # TODO temporary hardcoded part
+    #     - /home/logs:/logs/
+    #     - /home/temp/ml_services:/temp/
+    #     # - ${OSDR_LOG_FOLDER}:/logs
+    #     # - ${OSDR_TEMP_FILES_FOLDER}:/temp
+    #     networks:
+    #     - osdr-net-ext
+    #     command: >
+    #       /bin/bash -c "
+    #         sleep 5;
+    #         python ./calculator.py;
+    #       "
+
+    # office-processor-service:
+    #     restart: always
+    #     container_name: office-processor-service
+    #     image: docker.scidatasoft.com/sds/office-processor-service:${TAG_VERSION-latest}
+    #     #mem_limit: 512m
+    #     environment:
+    #     - TZ=EST
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_TEMP_FILES_FOLDER=/temp
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+    #     - QUEUE_PREFETCH_SIZE=9
+    #     - EXECUTOR_THREAD_COUNT=2
+    #     volumes:
+    #     - ${OSDR_LOG_FOLDER}:/logs
+    #     - ${OSDR_TEMP_FILES_FOLDER}:/temp
+    #     ports:
+    #     - 8987:8087
+    #     networks:
+    #     - osdr-net-ext
+
+    chemical-properties-service:
+        restart: always
+        container_name: chemical-properties-service
+        image: leanda/chemical-properties:${TAG_VERSION-latest}
+        #mem_limit: 512m
+        environment:
+        - TZ=EST
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_TEMP_FILES_FOLDER=/temp
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+        - QUEUE_PREFETCH_SIZE=9
+        - EXECUTOR_THREAD_COUNT=3
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        - ${OSDR_TEMP_FILES_FOLDER}:/temp
+        ports:
+        - 8986:8086
+        networks:
+        - osdr-net-ext
+
+    # chemical-export-service:
+    #     restart: always
+    #     container_name: chemical-export-service
+    #     image: docker.scidatasoft.com/sds/chemical-export-service:${TAG_VERSION-latest}
+    #     #mem_limit: 512m
+    #     environment:
+    #     - TZ=EST
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_TEMP_FILES_FOLDER=/temp
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+    #     - QUEUE_PREFETCH_SIZE=9
+    #     - EXECUTOR_THREAD_COUNT=3
+    #     volumes:
+    #     - ${OSDR_LOG_FOLDER}:/logs
+    #     - ${OSDR_TEMP_FILES_FOLDER}:/temp
+    #     ports:
+    #     - 8988:8088
+    #     networks:
+    #     - osdr-net-ext
+
+    # web-importer-service:
+    #     container_name: web-importer-service
+    #     image: docker.scidatasoft.com/sds/web-importer-service:${TAG_VERSION-latest}
+    #     environment:
+    #     - TZ=EST
+    #     - OSDR_TEMP_FILES_FOLDER=/temp
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+    #     - QUEUE_PREFETCH_SIZE=9
+    #     - EXECUTOR_THREAD_COUNT=3
+    #     volumes:
+    #     - ${OSDR_LOG_FOLDER}:/logs
+    #     - ${OSDR_TEMP_FILES_FOLDER}:/temp
+    #     build:
+    #         context: .
+    #     ports:
+    #     - 8989:8089
+    #     networks:
+    #     - osdr-net-ext
+
+networks:
+    osdr-net-ext:
+        external:
+            name: osdr-sys-net
