@@ -20,7 +20,7 @@ services:
         networks:
         - osdr-net-ext
         ports:
-        - "8080:80"
+        - "5555:80"
 
     blob-storage-api:
         restart: always
@@ -50,23 +50,6 @@ services:
     #     networks:
     #     - osdr-net-ext
 
-    # imaging-web-api:
-    #     restart: always
-    #     container_name: imaging-web-api
-    #     image: docker.scidatasoft.com/imaging-web-api:${TAG_VERSION-latest}
-    #     environment:
-    #     - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL_UNESCAPED}
-    #     - OSDR_LOG_FOLDER=/logs
-    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
-    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
-    #     - SWAGGER_BASEPATH=/imaging/v1
-    #     volumes:
-    #     - ${OSDR_LOG_FOLDER}:/logs
-    #     networks:
-    #     - osdr-net-ext
-    #     ports:
-    #     - "7972:18006"
-
     osdr-service-web-api:
         restart: always
         container_name: osdr-service-web-api
@@ -88,51 +71,20 @@ services:
         ports:
         - "28611:18006"
 
-    # metadata-storage-web-api:
-    #     restart: always
-    #     container_name: metadata-storage-web-api
-    #     image: docker.scidatasoft.com/metadata-storage-web-api:${TAG_VERSION-latest}
-    #     environment:
-    #     - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL_UNESCAPED}
-    #     - OSDR_LOG_FOLDER=/logs
-    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
-    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
-    #     volumes:
-    #     - ${OSDR_LOG_FOLDER}:/logs
-    #     networks:
-    #     - osdr-net-ext
-    #     ports:
-    #     - "28612:18006"
-
-    # imaging-persistence:
-    #     restart: always
-    #     container_name: imaging-persistence
-    #     image: docker.scidatasoft.com/imaging-persistence:${TAG_VERSION-latest}
-    #     environment:
-    #     - OSDR_LOG_FOLDER=/logs
-    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
-    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
-    #     volumes:
-    #     - ${OSDR_LOG_FOLDER}:/logs
-    #     networks:
-    #     - osdr-net-ext
-    #     ports:
-    #     - "12020:12020"
-
-    # metadata-storage-processing:
-    #     restart: always
-    #     container_name: metadata-storage-processing
-    #     image: docker.scidatasoft.com/metadata-storage-processing:${TAG_VERSION-latest}
-    #     environment:
-    #     - OSDR_LOG_FOLDER=/logs
-    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
-    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
-    #     volumes:
-    #     - ${OSDR_LOG_FOLDER}:/logs
-    #     networks:
-    #     - osdr-net-ext
-    #     ports:
-    #     - "11050:11050"
+    metadata-storage-processing:
+        restart: always
+        container_name: metadata-storage-processing
+        image: leanda/metadata-processing:${TAG_VERSION-latest}
+        environment:
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        networks:
+        - osdr-net-ext
+        ports:
+        - "11050:11050"
 
     # osdr-indexing:
     #     restart: always
@@ -278,22 +230,22 @@ services:
     #         python ./properties_predictor.py;
     #       "
 
-    # osdr-imaging-service:
-    #     restart: always
-    #     container_name: osdr-imaging-service
-    #     image: docker.scidatasoft.com/sds/osdr-imaging-service:${TAG_VERSION-latest}
-    #     environment:
-    #     - OSDR_LOG_FOLDER=/logs
-    #     - OSDR_TEMP_FILES_FOLDER=/temp
-    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
-    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
-    #     - QUEUE_PREFETCH_SIZE=9
-    #     - EXECUTOR_THREAD_COUNT=3
-    #     volumes:
-    #     - ${OSDR_LOG_FOLDER}:/logs
-    #     - ${OSDR_TEMP_FILES_FOLDER}:/temp
-    #     networks:
-    #     - osdr-net-ext
+    osdr-imaging-service:
+        restart: always
+        container_name: osdr-imaging-service
+        image: docker.scidatasoft.com/sds/osdr-imaging-service:${TAG_VERSION-latest}
+        environment:
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_TEMP_FILES_FOLDER=/temp
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+        - QUEUE_PREFETCH_SIZE=9
+        - EXECUTOR_THREAD_COUNT=3
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        - ${OSDR_TEMP_FILES_FOLDER}:/temp
+        networks:
+        - osdr-net-ext
 
     chemical-file-parser-service:
         restart: always
@@ -492,26 +444,26 @@ services:
     #         python ./calculator.py;
     #       "
 
-    # office-processor-service:
-    #     restart: always
-    #     container_name: office-processor-service
-    #     image: docker.scidatasoft.com/sds/office-processor-service:${TAG_VERSION-latest}
-    #     #mem_limit: 512m
-    #     environment:
-    #     - TZ=EST
-    #     - OSDR_LOG_FOLDER=/logs
-    #     - OSDR_TEMP_FILES_FOLDER=/temp
-    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
-    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
-    #     - QUEUE_PREFETCH_SIZE=9
-    #     - EXECUTOR_THREAD_COUNT=2
-    #     volumes:
-    #     - ${OSDR_LOG_FOLDER}:/logs
-    #     - ${OSDR_TEMP_FILES_FOLDER}:/temp
-    #     ports:
-    #     - 8987:8087
-    #     networks:
-    #     - osdr-net-ext
+    office-processor-service:
+        restart: always
+        container_name: office-processor-service
+        image: leanda/office-file-processor:${TAG_VERSION-latest}
+        #mem_limit: 512m
+        environment:
+        - TZ=EST
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_TEMP_FILES_FOLDER=/temp
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+        - QUEUE_PREFETCH_SIZE=9
+        - EXECUTOR_THREAD_COUNT=2
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        - ${OSDR_TEMP_FILES_FOLDER}:/temp
+        ports:
+        - 8987:8087
+        networks:
+        - osdr-net-ext
 
     chemical-properties-service:
         restart: always

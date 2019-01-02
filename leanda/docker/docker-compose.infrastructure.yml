@@ -90,8 +90,8 @@ services:
           POSTGRES_DATABASE: keycloak
           JDBC_PARAMS: 'connectTimeout=30'
         ports:
-        - '18080:8080'
-        - '18443:8443'
+        - '8080:8080'
+        - '8443:8443'
         volumes:
         - data-keycloak:/data
         networks:
