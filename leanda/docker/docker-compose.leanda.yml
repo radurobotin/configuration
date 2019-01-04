@@ -486,47 +486,47 @@ services:
         networks:
         - osdr-net-ext
 
-    # chemical-export-service:
-    #     restart: always
-    #     container_name: chemical-export-service
-    #     image: docker.scidatasoft.com/sds/chemical-export-service:${TAG_VERSION-latest}
-    #     #mem_limit: 512m
-    #     environment:
-    #     - TZ=EST
-    #     - OSDR_LOG_FOLDER=/logs
-    #     - OSDR_TEMP_FILES_FOLDER=/temp
-    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
-    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
-    #     - QUEUE_PREFETCH_SIZE=9
-    #     - EXECUTOR_THREAD_COUNT=3
-    #     volumes:
-    #     - ${OSDR_LOG_FOLDER}:/logs
-    #     - ${OSDR_TEMP_FILES_FOLDER}:/temp
-    #     ports:
-    #     - 8988:8088
-    #     networks:
-    #     - osdr-net-ext
+    chemical-export-service:
+        restart: always
+        container_name: chemical-export-service
+        image: leanda/chemical-export:${TAG_VERSION-latest}
+        #mem_limit: 512m
+        environment:
+        - TZ=EST
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_TEMP_FILES_FOLDER=/temp
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+        - QUEUE_PREFETCH_SIZE=9
+        - EXECUTOR_THREAD_COUNT=3
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        - ${OSDR_TEMP_FILES_FOLDER}:/temp
+        ports:
+        - 8988:8088
+        networks:
+        - osdr-net-ext
 
-    # web-importer-service:
-    #     container_name: web-importer-service
-    #     image: docker.scidatasoft.com/sds/web-importer-service:${TAG_VERSION-latest}
-    #     environment:
-    #     - TZ=EST
-    #     - OSDR_TEMP_FILES_FOLDER=/temp
-    #     - OSDR_LOG_FOLDER=/logs
-    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
-    #     - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
-    #     - QUEUE_PREFETCH_SIZE=9
-    #     - EXECUTOR_THREAD_COUNT=3
-    #     volumes:
-    #     - ${OSDR_LOG_FOLDER}:/logs
-    #     - ${OSDR_TEMP_FILES_FOLDER}:/temp
-    #     build:
-    #         context: .
-    #     ports:
-    #     - 8989:8089
-    #     networks:
-    #     - osdr-net-ext
+    web-importer-service:
+        container_name: web-importer-service
+        image: leanda/web-importer:${TAG_VERSION-latest}
+        environment:
+        - TZ=EST
+        - OSDR_TEMP_FILES_FOLDER=/temp
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+        - QUEUE_PREFETCH_SIZE=9
+        - EXECUTOR_THREAD_COUNT=3
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        - ${OSDR_TEMP_FILES_FOLDER}:/temp
+        build:
+            context: .
+        ports:
+        - 8989:8089
+        networks:
+        - osdr-net-ext
 
 networks:
     osdr-net-ext:
