@@ -5,7 +5,7 @@ services:
         image: eventstore/eventstore:release-4.0.2
         #mem_limit: 2g
         restart: always
-        container_name: osdr-dev-eventstore
+        container_name: eventstore
         ports:
         - "2113:2113"
         - "1113:1113"
@@ -14,26 +14,26 @@ services:
         volumes:
         - data-eventstore:/var/lib/eventstore
         networks:
-        - osdr-net-ext
+        - leanda-ext
 
     redis:
         image: redis:4-alpine
         #mem_limit: 256m
         restart: always
-        container_name: osdr-dev-redis
+        container_name: redis
         command: redis-server --appendonly yes
         ports:
         - "6379:6379"
         volumes:
         - data-redis:/data
         networks:
-        - osdr-net-ext
+        - leanda-ext
 
     rabbitmq:
         image: leanda/rabbitmq
         #mem_limit: 2g
         restart: always
-        container_name: osdr-dev-rabbitmq
+        container_name: rabbitmq
         hostname: "rabbitmq-dev"
         environment:
         - RABBITMQ_DEFAULT_VHOST=osdr_dev
@@ -44,20 +44,20 @@ services:
         volumes:
         - data-rabbitmq:/var/lib/rabbitmq
         networks:
-        - osdr-net-ext
+        - leanda-ext
 
     mongo:
         image: mongo:3.6
         #mem_limit: 12g
         restart: always
-        container_name: osdr-dev-mongo
+        container_name: mongo
         ports:
         - "27017:27017"
         volumes:
         - data-mongo-config:/data/configdb
         - data-mongo-data:/data/db
         networks:
-        - osdr-net-ext
+        - leanda-ext
 
     postgres:
       container_name: 'keycloak-postgres'
@@ -72,7 +72,7 @@ services:
       ports:
       - '5432:5432'
       networks:
-      - osdr-net-ext
+      - leanda-ext
       volumes:
       - data-pstgresql:/data
 
@@ -95,7 +95,7 @@ services:
         volumes:
         - data-keycloak:/data
         networks:
-        - osdr-net-ext
+        - leanda-ext
         depends_on:
         - postgres
 
@@ -103,11 +103,11 @@ services:
     #     image: docker.scidatasoft.com/filebeat
     #     #mem_limit: 128m
     #     restart: always
-    #     container_name: osdr-dev-filebeat
+    #     container_name: filebeat
     #     volumes:
     #     - /home/logs:/logs/
     #     networks:
-    #     - osdr-net-ext
+    #     - leanda-ext
     #     depends_on:
     #     - logstash
 
@@ -115,7 +115,7 @@ services:
     #     image: docker.scidatasoft.com/logstash
     #     #mem_limit: 1g
     #     restart: always
-    #     container_name: osdr-dev-logstash
+    #     container_name: logstash
     #     command: -f /config-dir/logstash.conf
     #     ports:
     #     - "5044:5044"
@@ -124,7 +124,7 @@ services:
     #     - "12202:12202"
     #     - "12202:12202/udp"
     #     networks:
-    #     - osdr-net-ext
+    #     - leanda-ext
     #     depends_on:
     #     - elasticsearch
 
@@ -132,19 +132,19 @@ services:
     #     image: docker.elastic.co/kibana/kibana-oss:6.1.1
     #     #mem_limit: 512m
     #     restart: always
-    #     container_name: osdr-dev-kibana
+    #     container_name: kibana
     #     environment:
     #     - ELASTICSEARCH_URL:"elasticsearch:9201"
     #     ports:
     #     - "5661:5601"
     #     networks:
-    #     - osdr-net-ext
+    #     - leanda-ext
 
     elasticsearch:
         image: leanda/elasticsearch
         #mem_limit: 10g
         #restart: always
-        container_name: osdr-dev-es
+        container_name: elasticsearch
         environment:
         - discovery.type=single-node
         #- "ES_JAVA_OPTS=-Xms8g -Xmx8g"
@@ -155,32 +155,32 @@ services:
         - "9200:9200"
         - "9301:9300"
         networks:
-        - osdr-net-ext
+        - leanda-ext
 
     # heartbeat:
     #     restart: always
     #     image: docker.scidatasoft.com/heartbeat:latest
     #     #mem_limit: 128m
-    #     container_name: osdr-dev-heartbeat
+    #     container_name: heartbeat
     #     environment:
     #     - API_URL=http://nginx
-    #     - UI_URL=http://osdr-ui
+    #     - UI_URL=http://leanda-ui
     #     - BACKEND_HOST=mulanback.rsc-us.org
     #     networks:
-    #     - osdr-net-ext
+    #     - leanda-ext
 
     # nginx:
     #     restart: always
     #     #mem_limit: 128m
     #     image: docker.scidatasoft.com/nginx
-    #     container_name: osdr-dev-nginx
+    #     container_name: nginx
     #     ports:
     #     - "8086:80"
     #     networks:
-    #     - osdr-net-ext
+    #     - leanda-ext
 
     # elasticsearch-curator:
-    #     container_name: osdr-dev-elasticsearch-curator
+    #     container_name: elasticsearch-curator
     #     image: docker.scidatasoft.com/elasticsearch-curator:latest
     #     #mem_limit: 128m
     #     environment:
@@ -189,7 +189,7 @@ services:
     #     - BLACK_LIST = ['elasticsearch', 'urllib3']
     #     command: --config config.yml action.yml
     #     networks:
-    #     - osdr-net-ext
+    #     - leanda-ext
 
 volumes:
     data-eventstore:
@@ -202,6 +202,6 @@ volumes:
     data-pstgresql:
 
 networks:
-    osdr-net-ext:
+    leanda-ext:
         external:
-            name: osdr-sys-net
+            name: leanda-net

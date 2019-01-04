@@ -1,11 +1,11 @@
-#` This docker-compose is for running OSDR services for SSP
+#` This docker-compose is for running Leanda services
 
 version: '3'
 
 services:
-    osdr-ui:
-        #restart: always
-        container_name: osdr-ui
+    ui:
+        restart: always
+        container_name: ui
         image: leanda/ui:${TAG_VERSION-latest}
         environment:
         - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL}
@@ -18,13 +18,13 @@ services:
         - KETCHER_URL=${KETCHER_URL}
         - REALM=${REALM}
         networks:
-        - osdr-net-ext
+        - leanda-ext
         ports:
         - "5555:80"
 
     blob-storage-api:
         restart: always
-        container_name: osdr-blob-storage-api
+        container_name: blob-storage-api
         image: leanda/blob-storage-webapi:${TAG_VERSION-latest}
         environment:
         - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL_UNESCAPED}
@@ -35,7 +35,7 @@ services:
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
-        - osdr-net-ext
+        - leanda-ext
         ports:
         - "18006:18006"
 
@@ -48,11 +48,11 @@ services:
     #     volumes:
     #     - ${OSDR_LOG_FOLDER}:/logs
     #     networks:
-    #     - osdr-net-ext
+    #     - leanda-ext
 
-    osdr-service-web-api:
+    core-web-api:
         restart: always
-        container_name: osdr-service-web-api
+        container_name: core-web-api
         image: leanda/core-web-api:${TAG_VERSION-latest}
         environment:
         - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL_UNESCAPED}
@@ -67,7 +67,7 @@ services:
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
-        - osdr-net-ext
+        - leanda-ext
         ports:
         - "28611:18006"
 
@@ -82,13 +82,13 @@ services:
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
-        - osdr-net-ext
+        - leanda-ext
         ports:
         - "11050:11050"
 
-    osdr-indexing:
+    indexing:
         restart: always
-        container_name: osdr-indexing
+        container_name: indexing
         image: leanda/indexing:${TAG_VERSION-latest}
         environment:
         - OSDR_LOG_FOLDER=/logs
@@ -98,13 +98,13 @@ services:
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
-        - osdr-net-ext
+        - leanda-ext
         ports:
         - "11090:11090"
 
-    osdr-service-backend:
+    core-backend:
         restart: always
-        container_name: osdr-service-backend
+        container_name: core-backend
         image: leanda/core-backend:${TAG_VERSION-latest}
         environment:
         - OSDR_LOG_FOLDER=/logs
@@ -115,13 +115,13 @@ services:
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
-        - osdr-net-ext
+        - leanda-ext
         ports:
         - "11030:11030"
 
-    osdr-service-frontend:
+    core-frontend:
         restart: always
-        container_name: osdr-service-frontend
+        container_name: core-frontend
         image: leanda/core-frontend:${TAG_VERSION-latest}
         environment:
         - OSDR_LOG_FOLDER=/logs
@@ -132,13 +132,13 @@ services:
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
-        - osdr-net-ext
+        - leanda-ext
         ports:
         - "11020:11020"
 
-    osdr-service-sagahost:
+    core-sagahost:
         restart: always
-        container_name: osdr-service-sagahost
+        container_name: core-sagahost
         image: leanda/core-sagahost:${TAG_VERSION-latest}
         environment:
         - OSDR_LOG_FOLDER=/logs
@@ -147,13 +147,13 @@ services:
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
-        - osdr-net-ext
+        - leanda-ext
         ports:
         - "11010:11010"
 
-    osdr-service-persistence:
+    core-persistence:
         restart: always
-        container_name: osdr-service-persistence
+        container_name: core-persistence
         image: leanda/core-persistence:${TAG_VERSION-latest}
         environment:
         - OSDR_LOG_FOLDER=/logs
@@ -162,13 +162,13 @@ services:
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
-        - osdr-net-ext
+        - leanda-ext
         ports:
         - "11000:11000"
 
-    # osdr-ml-modeler:
+    # ml-modeler:
     #     restart: always
-    #     container_name: osdr-ml-modeler
+    #     container_name: ml-modeler
     #     image: docker.scidatasoft.com/osdr-ml-modeler:${TAG_VERSION-latest}
     #     environment:
     #     - OSDR_LOG_FOLDER=/logs
@@ -187,7 +187,7 @@ services:
     #     # - ${OSDR_LOG_FOLDER}:/logs
     #     # - ${OSDR_TEMP_FILES_FOLDER}:/temp
     #     networks:
-    #     - osdr-net-ext
+    #     - leanda-ext
     #     depends_on:
     #     - blob-storage-api
     #     command: >
@@ -196,9 +196,9 @@ services:
     #         python ./model_trainer.py;
     #       "
 
-    # osdr-ml-predictor:
+    # ml-predictor:
     #     restart: always
-    #     container_name: osdr-ml-predictor
+    #     container_name: ml-predictor
     #     image: docker.scidatasoft.com/osdr-ml-predictor:${TAG_VERSION-latest}
     #     environment:
     #     - OSDR_LOG_FOLDER=/logs
@@ -221,7 +221,7 @@ services:
     #     # - ${OSDR_LOG_FOLDER}:/logs
     #     # - ${OSDR_TEMP_FILES_FOLDER}:/temp
     #     networks:
-    #     - osdr-net-ext
+    #     - leanda-ext
     #     depends_on:
     #     - blob-storage-api
     #     command: >
@@ -230,9 +230,9 @@ services:
     #         python ./properties_predictor.py;
     #       "
 
-    osdr-imaging-service:
+    imaging:
         restart: always
-        container_name: osdr-imaging-service
+        container_name: imaging
         image: leanda/imaging:${TAG_VERSION-latest}
         environment:
         - OSDR_LOG_FOLDER=/logs
@@ -245,11 +245,11 @@ services:
         - ${OSDR_LOG_FOLDER}:/logs
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
         networks:
-        - osdr-net-ext
+        - leanda-ext
 
-    chemical-file-parser-service:
+    chemical-file-parser:
         restart: always
-        container_name: chemical-file-parser-service
+        container_name: chemical-file-parser
         image: leanda/chemical-file-parser:${TAG_VERSION-latest}
         #mem_limit: 512m
         environment:
@@ -264,9 +264,9 @@ services:
         - ${OSDR_LOG_FOLDER}:/logs
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
         networks:
-        - osdr-net-ext
+        - leanda-ext
     
-    reaction-parser-service:
+    reaction-parser:
         restart: always
         container_name: reaction-file-parser
         image: leanda/reaction-file-parser:${TAG_VERSION-latest}
@@ -283,9 +283,9 @@ services:
         - ${OSDR_LOG_FOLDER}:/logs
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
         networks:
-        - osdr-net-ext
+        - leanda-ext
 
-    crystal-parser-service:
+    crystal-parser:
         restart: always
         container_name: crystal-file-parser
         image: leanda/crystal-file-parser:${TAG_VERSION-latest}
@@ -302,9 +302,9 @@ services:
         - ${OSDR_LOG_FOLDER}:/logs
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
         networks:
-        - osdr-net-ext
+        - leanda-ext
 
-    spectra-parser-service:
+    spectra-parser:
         restart: always
         container_name: spectra-file-parser
         image: leanda/spectra-file-parser:${TAG_VERSION-latest}
@@ -321,11 +321,11 @@ services:
         - ${OSDR_LOG_FOLDER}:/logs
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
         networks:
-        - osdr-net-ext
+        - leanda-ext
 
-    # osdr-ml-training-reporter:
+    # ml-training-reporter:
     #     restart: always
-    #     container_name: osdr-ml-training-reporter
+    #     container_name: ml-training-reporter
     #     image: docker.scidatasoft.com/osdr-ml-training-reporter:${TAG_VERSION-latest}
     #     #mem_limit: 1g
     #     environment:
@@ -348,16 +348,16 @@ services:
     #     depends_on:
     #     - blob-storage-api
     #     networks:
-    #     - osdr-net-ext
+    #     - leanda-ext
     #     command: >
     #       /bin/bash -c "
     #         sleep 5;
     #         python ./report_generator.py;
     #       "
 
-    # osdr-ml-training-optimizer:
+    # ml-training-optimizer:
     #     restart: always
-    #     container_name: osdr-ml-training-optimizer
+    #     container_name: ml-training-optimizer
     #     image: docker.scidatasoft.com/osdr-ml-training-optimizer:${TAG_VERSION-latest}
     #     #mem_limit: 1g
     #     environment:
@@ -379,16 +379,16 @@ services:
     #     depends_on:
     #     - blob-storage-api
     #     networks:
-    #     - osdr-net-ext
+    #     - leanda-ext
     #     command: >
     #       /bin/bash -c "
     #         sleep 5;
     #         python ./optimizer.py;
     #       "
 
-    # osdr-ml-single-structure-predictor:
+    # ml-single-structure-predictor:
     #     restart: always
-    #     container_name: osdr-ml-single-structure-predictor
+    #     container_name: ml-single-structure-predictor
     #     image: docker.scidatasoft.com/osdr-ml-single-structure-predictor:${TAG_VERSION-latest}
     #     #mem_limit: 36g
     #     environment:
@@ -411,16 +411,16 @@ services:
     #     depends_on:
     #     - blob-storage-api
     #     networks:
-    #     - osdr-net-ext
+    #     - leanda-ext
     #     command: >
     #       /bin/bash -c "
     #         sleep 5;
     #         python ./single_structure_predictor.py;
     #       "
 
-    # osdr-feature-vectors-calculator:
+    # feature-vectors-calculator:
     #     restart: always
-    #     container_name: osdr-feature-vectors-calculator
+    #     container_name: feature-vectors-calculator
     #     image: docker.scidatasoft.com/osdr-feature-vectors-calculator:${TAG_VERSION-latest}
     #     #mem_limit: 1g
     #     environment:
@@ -437,16 +437,16 @@ services:
     #     # - ${OSDR_LOG_FOLDER}:/logs
     #     # - ${OSDR_TEMP_FILES_FOLDER}:/temp
     #     networks:
-    #     - osdr-net-ext
+    #     - leanda-ext
     #     command: >
     #       /bin/bash -c "
     #         sleep 5;
     #         python ./calculator.py;
     #       "
 
-    office-processor-service:
+    office-processor:
         restart: always
-        container_name: office-processor-service
+        container_name: office-processor
         image: leanda/office-file-processor:${TAG_VERSION-latest}
         #mem_limit: 512m
         environment:
@@ -463,11 +463,11 @@ services:
         ports:
         - 8987:8087
         networks:
-        - osdr-net-ext
+        - leanda-ext
 
-    chemical-properties-service:
+    chemical-properties:
         restart: always
-        container_name: chemical-properties-service
+        container_name: chemical-properties
         image: leanda/chemical-properties:${TAG_VERSION-latest}
         #mem_limit: 512m
         environment:
@@ -484,11 +484,11 @@ services:
         ports:
         - 8986:8086
         networks:
-        - osdr-net-ext
+        - leanda-ext
 
-    chemical-export-service:
+    chemical-export:
         restart: always
-        container_name: chemical-export-service
+        container_name: chemical-export
         image: leanda/chemical-export:${TAG_VERSION-latest}
         #mem_limit: 512m
         environment:
@@ -505,10 +505,10 @@ services:
         ports:
         - 8988:8088
         networks:
-        - osdr-net-ext
+        - leanda-ext
 
-    web-importer-service:
-        container_name: web-importer-service
+    web-importer:
+        container_name: web-importer
         image: leanda/web-importer:${TAG_VERSION-latest}
         environment:
         - TZ=EST
@@ -526,9 +526,9 @@ services:
         ports:
         - 8989:8089
         networks:
-        - osdr-net-ext
+        - leanda-ext
 
 networks:
-    osdr-net-ext:
+    leanda-ext:
         external:
-            name: osdr-sys-net
+            name: leanda-net
