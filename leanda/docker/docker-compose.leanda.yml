@@ -233,7 +233,7 @@ services:
     osdr-imaging-service:
         restart: always
         container_name: osdr-imaging-service
-        image: docker.scidatasoft.com/sds/osdr-imaging-service:${TAG_VERSION-latest}
+        image: leanda/imaging:${TAG_VERSION-latest}
         environment:
         - OSDR_LOG_FOLDER=/logs
         - OSDR_TEMP_FILES_FOLDER=/temp
