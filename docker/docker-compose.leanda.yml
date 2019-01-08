@@ -63,7 +63,7 @@ services:
         - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore:1113
         - OSDR_ES=http://elasticsearch:9200
         - SWAGGER_BASEPATH=/osdr/v1
-        - OSDR_LOG_LEVEL=${OSDR_LOG_LEVEL}
+        - OSDR_LOG_LEVEL=Warn
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
