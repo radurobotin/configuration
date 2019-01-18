@@ -50,27 +50,6 @@ services:
     #     networks:
     #     - leanda-ext
 
-    core-web-api:
-        restart: always
-        container_name: core-web-api
-        image: leanda/core-web-api:${TAG_VERSION-latest}
-        environment:
-        - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL_UNESCAPED}
-        - OSDR_REDIS=redis
-        - OSDR_LOG_FOLDER=/logs
-        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
-        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
-        - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore:1113
-        - OSDR_ES=http://elasticsearch:9200
-        - SWAGGER_BASEPATH=/osdr/v1
-        - OSDR_LOG_LEVEL=${OSDR_LOG_LEVEL}
-        volumes:
-        - ${OSDR_LOG_FOLDER}:/logs
-        networks:
-        - leanda-ext
-        ports:
-        - "28611:18006"
-
     metadata-storage-processing:
         restart: always
         container_name: metadata-storage-processing
@@ -102,16 +81,41 @@ services:
         ports:
         - "11090:11090"
 
+    core-web-api:
+        restart: always
+        container_name: core-web-api
+        image: leanda/core-web-api:${TAG_VERSION-latest}
+        entrypoint: /bin/bash
+        environment:
+        - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL_UNESCAPED}
+        - OSDR_REDIS=redis
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore:1113
+        - OSDR_ES=http://elasticsearch:9200
+        - SWAGGER_BASEPATH=/osdr/v1
+        - OSDR_LOG_LEVEL=${OSDR_LOG_LEVEL}
+        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./wait-for-it.sh keycloak:8080 -t 30 -- ./Sds.Osdr.WebApi
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        networks:
+        - leanda-ext
+        ports:
+        - "28611:18006"
+
     core-backend:
         restart: always
         container_name: core-backend
         image: leanda/core-backend:${TAG_VERSION-latest}
+        entrypoint: /bin/bash
         environment:
         - OSDR_LOG_FOLDER=/logs
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore:1113
         - OSDR_REDIS=redis
+        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./Sds.Osdr.Domain.BackEnd
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
@@ -123,12 +127,14 @@ services:
         restart: always
         container_name: core-frontend
         image: leanda/core-frontend:${TAG_VERSION-latest}
+        entrypoint: /bin/bash
         environment:
         - OSDR_LOG_FOLDER=/logs
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore:1113
         - OSDR_REDIS=redis
+        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./Sds.Osdr.Domain.FrontEnd
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
@@ -140,10 +146,12 @@ services:
         restart: always
         container_name: core-sagahost
         image: leanda/core-sagahost:${TAG_VERSION-latest}
+        entrypoint: /bin/bash
         environment:
         - OSDR_LOG_FOLDER=/logs
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./Sds.Osdr.Domain.SagaHost
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
@@ -155,10 +163,12 @@ services:
         restart: always
         container_name: core-persistence
         image: leanda/core-persistence:${TAG_VERSION-latest}
+        entrypoint: /bin/bash
         environment:
         - OSDR_LOG_FOLDER=/logs
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./Sds.Osdr.Persistence
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
