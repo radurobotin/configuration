@@ -600,8 +600,6 @@ services:
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
-        build:
-            context: .
         ports:
         - 8989:8089
         networks:
