@@ -225,7 +225,7 @@ services:
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         - SWAGGER_BASEPATH=/blob/v1
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./wait-for-it.sh keycloak:8080 -t 30 -- ./Sds.Storage.Blob.WebApi
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./wait-for-it.sh keycloak:8080 -t 60 -- ./Sds.Storage.Blob.WebApi
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
@@ -246,7 +246,7 @@ services:
         - OSDR_LOG_FOLDER=/logs
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./Sds.MetadataStorage.Processing
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.MetadataStorage.Processing
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
@@ -266,7 +266,7 @@ services:
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         - OSDR_ES=http://elasticsearch:9200
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./Sds.Indexing
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.Indexing
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
@@ -291,7 +291,7 @@ services:
         - OSDR_ES=http://elasticsearch:9200
         - SWAGGER_BASEPATH=/osdr/v1
         - OSDR_LOG_LEVEL=${OSDR_LOG_LEVEL}
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./wait-for-it.sh keycloak:8080 -t 30 -- ./Sds.Osdr.WebApi
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./wait-for-it.sh keycloak:8080 -t 60 -- ./Sds.Osdr.WebApi
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
@@ -316,7 +316,7 @@ services:
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore:1113
         - OSDR_REDIS=redis
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./Sds.Osdr.Domain.BackEnd
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.Osdr.Domain.BackEnd
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
@@ -340,7 +340,7 @@ services:
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore:1113
         - OSDR_REDIS=redis
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./Sds.Osdr.Domain.FrontEnd
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.Osdr.Domain.FrontEnd
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
@@ -357,7 +357,7 @@ services:
         - OSDR_LOG_FOLDER=/logs
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./Sds.Osdr.Domain.SagaHost
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.Osdr.Domain.SagaHost
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
@@ -377,7 +377,7 @@ services:
         - OSDR_LOG_FOLDER=/logs
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./Sds.Osdr.Persistence
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.Osdr.Persistence
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
@@ -400,7 +400,7 @@ services:
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - QUEUE_PREFETCH_SIZE=9
         - EXECUTOR_THREAD_COUNT=3
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- java -Djava.awt.headless=true -Xmx256m -XX:NativeMemoryTracking=summary -jar sds-imaging-service.jar
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- java -Djava.awt.headless=true -Xmx256m -XX:NativeMemoryTracking=summary -jar sds-imaging-service.jar
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
@@ -424,7 +424,7 @@ services:
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - QUEUE_PREFETCH_SIZE=9
         - EXECUTOR_THREAD_COUNT=3
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./wait-for-it.sh mongo:27017 -t 30 -- java -jar chemical-parser.jar
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./wait-for-it.sh mongo:27017 -t 60 -- java -jar chemical-parser.jar
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
@@ -448,7 +448,7 @@ services:
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - QUEUE_PREFETCH_SIZE=9
         - EXECUTOR_THREAD_COUNT=3
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./wait-for-it.sh mongo:27017 -t 30 -- java -XX:NativeMemoryTracking=summary -jar reaction-parser.jar
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./wait-for-it.sh mongo:27017 -t 60 -- java -XX:NativeMemoryTracking=summary -jar reaction-parser.jar
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
@@ -472,7 +472,7 @@ services:
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - QUEUE_PREFETCH_SIZE=9
         - EXECUTOR_THREAD_COUNT=3
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./wait-for-it.sh mongo:27017 -t 30 -- java -XX:NativeMemoryTracking=summary -jar crystal-parser.jar
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./wait-for-it.sh mongo:27017 -t 60 -- java -XX:NativeMemoryTracking=summary -jar crystal-parser.jar
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
@@ -496,7 +496,7 @@ services:
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - QUEUE_PREFETCH_SIZE=9
         - EXECUTOR_THREAD_COUNT=3
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./wait-for-it.sh mongo:27017 -t 30 -- java -XX:NativeMemoryTracking=summary -jar spectra-parser.jar
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./wait-for-it.sh mongo:27017 -t 60 -- java -XX:NativeMemoryTracking=summary -jar spectra-parser.jar
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
@@ -520,7 +520,7 @@ services:
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - QUEUE_PREFETCH_SIZE=9
         - EXECUTOR_THREAD_COUNT=2
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./wait-for-it.sh mongo:27017 -t 30 -- java -XX:NativeMemoryTracking=summary -jar office-file-processor.jar
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./wait-for-it.sh mongo:27017 -t 60 -- java -XX:NativeMemoryTracking=summary -jar office-file-processor.jar
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
@@ -546,7 +546,7 @@ services:
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - QUEUE_PREFETCH_SIZE=9
         - EXECUTOR_THREAD_COUNT=3
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./wait-for-it.sh mongo:27017 -t 30 -- java -jar sds-chemical-properties-service.jar
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./wait-for-it.sh mongo:27017 -t 60 -- java -jar sds-chemical-properties-service.jar
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
@@ -572,7 +572,7 @@ services:
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - QUEUE_PREFETCH_SIZE=9
         - EXECUTOR_THREAD_COUNT=3
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./wait-for-it.sh mongo:27017 -t 30 -- java -jar chemical-export-service.jar
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./wait-for-it.sh mongo:27017 -t 60 -- java -jar chemical-export-service.jar
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
@@ -596,7 +596,7 @@ services:
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - QUEUE_PREFETCH_SIZE=9
         - EXECUTOR_THREAD_COUNT=3
-        command: ./wait-for-it.sh rabbitmq:5672 -t 30 -- ./wait-for-it.sh mongo:27017 -t 30 -- java -jar web-importer-service.jar
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./wait-for-it.sh mongo:27017 -t 60 -- java -jar web-importer-service.jar
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
