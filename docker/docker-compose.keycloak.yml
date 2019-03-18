@@ -36,11 +36,5 @@ services:
         - postgres
 
 volumes:
-    data-eventstore:
-    data-redis:
-    data-rabbitmq:
-    data-elasticsearch:
-    data-mongo-config:
-    data-mongo-data:
     data-keycloak:
     data-pstgresql:
