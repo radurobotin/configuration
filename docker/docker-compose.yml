@@ -224,7 +224,7 @@ services:
         - OSDR_LOG_FOLDER=/logs
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
-        - SWAGGER_BASEPATH=/blob/v1
+        # - SWAGGER_BASEPATH=/blob/v1
         command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.Storage.Blob.WebApi
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
@@ -288,7 +288,7 @@ services:
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore:1113
         - OSDR_ES=http://elasticsearch:9200
-        - SWAGGER_BASEPATH=/osdr/v1
+        # - SWAGGER_BASEPATH=/osdr/v1
         - OSDR_LOG_LEVEL=${OSDR_LOG_LEVEL}
         command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.Osdr.WebApi
         volumes:
