@@ -215,7 +215,7 @@ services:
         - core-web-api
 
     blob-storage-api:
-        restart: always
+        # restart: always
         container_name: blob-storage-api
         entrypoint: /bin/bash
         image: leanda/blob-storage-webapi:${TAG_VERSION-latest}
@@ -276,7 +276,7 @@ services:
         - rabbitmq
 
     core-web-api:
-        restart: always
+        # restart: always
         container_name: core-web-api
         image: leanda/core-web-api:${TAG_VERSION-latest}
         entrypoint: /bin/bash
@@ -304,7 +304,7 @@ services:
         - mongo
 
     core-backend:
-        restart: always
+        # restart: always
         container_name: core-backend
         image: leanda/core-backend:${TAG_VERSION-latest}
         entrypoint: /bin/bash
@@ -328,7 +328,7 @@ services:
         - mongo
 
     core-frontend:
-        restart: always
+        # restart: always
         container_name: core-frontend
         image: leanda/core-frontend:${TAG_VERSION-latest}
         entrypoint: /bin/bash
@@ -347,7 +347,7 @@ services:
         - "11020:11020"
 
     core-sagahost:
-        restart: always
+        # restart: always
         container_name: core-sagahost
         image: leanda/core-sagahost:${TAG_VERSION-latest}
         entrypoint: /bin/bash
@@ -367,7 +367,7 @@ services:
         - mongo
 
     core-persistence:
-        restart: always
+        # restart: always
         container_name: core-persistence
         image: leanda/core-persistence:${TAG_VERSION-latest}
         entrypoint: /bin/bash
@@ -387,7 +387,7 @@ services:
         - mongo
 
     imaging:
-        restart: always
+        # restart: always
         container_name: imaging
         image: leanda/imaging:${TAG_VERSION-latest}
         entrypoint: /bin/bash
@@ -409,7 +409,7 @@ services:
         - mongo
 
     chemical-file-parser:
-        restart: always
+        # restart: always
         container_name: chemical-file-parser
         image: leanda/chemical-file-parser:${TAG_VERSION-latest}
         #mem_limit: 512m
@@ -433,7 +433,7 @@ services:
         - mongo
 
     reaction-parser:
-        restart: always
+        # restart: always
         container_name: reaction-file-parser
         image: leanda/reaction-file-parser:${TAG_VERSION-latest}
         #mem_limit: 512m
@@ -457,7 +457,7 @@ services:
         - mongo
 
     crystal-parser:
-        restart: always
+        # restart: always
         container_name: crystal-file-parser
         image: leanda/crystal-file-parser:${TAG_VERSION-latest}
         #mem_limit: 512m
@@ -481,7 +481,7 @@ services:
         - mongo
 
     spectra-parser:
-        restart: always
+        # restart: always
         container_name: spectra-file-parser
         image: leanda/spectra-file-parser:${TAG_VERSION-latest}
         #mem_limit: 512m
@@ -505,7 +505,7 @@ services:
         - mongo
 
     office-processor:
-        restart: always
+        # restart: always
         container_name: office-processor
         image: leanda/office-file-processor:${TAG_VERSION-latest}
         #mem_limit: 512m
@@ -531,7 +531,7 @@ services:
         - mongo
 
     chemical-properties:
-        restart: always
+        # restart: always
         container_name: chemical-properties
         image: leanda/chemical-properties:${TAG_VERSION-latest}
         entrypoint: /bin/bash
@@ -557,7 +557,7 @@ services:
         - mongo
 
     chemical-export:
-        restart: always
+        # restart: always
         container_name: chemical-export
         image: leanda/chemical-export:${TAG_VERSION-latest}
         #mem_limit: 512m
