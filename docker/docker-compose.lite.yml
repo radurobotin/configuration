@@ -380,11 +380,9 @@ services:
         - mongo
     
     microscopy-metadata-service:
-        container_name: microscopy-metadata-service
-        image: leanda/microscopy-metadata-service:${TAG_VERSION-latest}
+        container_name: microscopy-metadata
+        image: leanda/microscopy-metadata:${TAG_VERSION-latest}
         entrypoint: /bin/bash
-        build:
-            context: .
         environment:
         - TZ=EST
         - OSDR_LOG_FOLDER=/logs
