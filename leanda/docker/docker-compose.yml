@@ -129,15 +129,16 @@ services:
     #     networks:
     #     - leanda-ext
 
-    # nginx:
-    #     restart: always
-    #     #mem_limit: 128m
-    #     image: docker.scidatasoft.com/nginx
-    #     container_name: nginx
-    #     ports:
-    #     - "8086:80"
-    #     networks:
-    #     - leanda-ext
+    nginx:
+        image: leanda/nginx
+        container_name: nginx
+        ports:
+        - "80:80"
+        networks:
+        - leanda-ext
+        depends_on:
+        - blob-storage-api
+        - core-web-api
 
     # elasticsearch-curator:
     #     container_name: elasticsearch-curator
@@ -152,7 +153,6 @@ services:
     #     - leanda-ext
 
     ui:
-        # restart: always
         container_name: ui
         image: leanda/ui:${TAG_VERSION-latest}
         environment:
