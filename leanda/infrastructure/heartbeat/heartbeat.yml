@@ -1,0 +1,138 @@
+  ################### Heartbeat Configuration Example #########################
+
+# This file is an example configuration file highlighting only some common options.
+# The heartbeat.reference.yml file in the same directory contains all the supported options
+# with detailed comments. You can use it for reference.
+#
+# You can find the full configuration reference here:
+# https://www.elastic.co/guide/en/beats/heartbeat/index.html
+
+############################# Heartbeat ######################################
+
+# Configure monitors
+heartbeat.monitors:
+- type: http
+  urls: ['${UI_URL}/about']
+  name: OSDR UI
+  schedule: '@every 58s'
+
+- type: http
+  urls: ['${API_URL}/osdr/v1/api/version']
+  name: OSDR Web Api
+  schedule: '@every 58s'
+
+- type: http
+  urls: ['${API_URL}/metadata/v1/api/version']
+  name: SDS OSDR Infobox Metadata Web API
+  schedule: '@every 58s'
+ 
+- type: http
+  urls: ['${API_URL}/imaging/v1/api/version']
+  name: SDS Imaging Web API
+  schedule: '@every 58s' 
+  
+- type: http
+  urls: ['${API_URL}/blob/v1/api/version']
+  name: SDS Blob Storage Web API
+  schedule: '@every 58s'   
+
+- type: http
+  urls: ['http://osdr-imaging-service:8080/api/version']
+  name: Jmol Imaging Service
+  schedule: '@every 58s'   
+                                 
+- type: tcp
+  hosts: ['osdr-service-persistence:11000']
+  name: OSDR Persistence service
+  schedule: '@every 58s'
+
+- type: tcp
+  hosts: ['osdr-service-sagahost:11010']
+  name: SDS OSDR Saga Host Service
+  schedule: '@every 58s'
+
+- type: tcp
+  hosts: ['osdr-service-frontend:11020']
+  name: SDS OSDR Front End Commands Handler Service
+  schedule: '@every 58s'
+
+- type: tcp
+  hosts: ['osdr-service-backend:11030']
+  name: SDS OSDR Back End Commands Handler Service
+  schedule: '@every 58s'
+
+- type: tcp
+  hosts: ['metadata-storage-processing:11050']
+  name: SDS OSDR Infobox Metadata Processing Service
+  schedule: '@every 58s'
+  
+- type: tcp
+  hosts: ['osdr-indexing:11090']
+  name: SDS Indexing Service
+  schedule: '@every 58s'
+
+- type: tcp
+  hosts: ['${BACKEND_HOST}:12000']
+  name: SDS Imaging Service
+  schedule: '@every 58s'
+
+- type: tcp
+  hosts: ['imaging-persistence:12020']
+  name: SDS Imaging Persistence Service
+  schedule: '@every 58s'
+
+- type: tcp
+  hosts: ['${BACKEND_HOST}:11080']
+  name: SDS Chemical File Parser Service
+  schedule: '@every 58s'
+  
+- type: tcp
+  hosts: ['${BACKEND_HOST}:11070']
+  name: SDS Chemical Properties Service
+  schedule: '@every 58s'
+
+- type: tcp
+  hosts: ['${BACKEND_HOST}:12060']
+  name: SDS CSV Service
+  schedule: '@every 58s'  
+
+- type: tcp
+  hosts: ['${BACKEND_HOST}:12050']
+  name: SDS Office Processor Service
+  schedule: '@every 58s'  
+
+- type: tcp
+  hosts: ['${BACKEND_HOST}:12080']
+  name: SDS Spectra File Parser Service
+  schedule: '@every 58s'
+
+- type: tcp
+  hosts: ['${BACKEND_HOST}:12070']
+  name: SDS Crystal File Parser Service
+  schedule: '@every 58s'
+
+- type: tcp
+  hosts: ['${BACKEND_HOST}:12040']
+  name: SDS WebImporter PDF Processing Service
+  schedule: '@every 58s'
+
+- type: tcp
+  hosts: ['${BACKEND_HOST}:12030']
+  name: SDS WebImporter Chemical Processing Service
+  schedule: '@every 58s'
+
+- type: tcp
+  hosts: ['${BACKEND_HOST}:12090']
+  name: SDS Chemical Export Service
+  schedule: '@every 58s'
+
+- type: icmp
+  schedule: '@every 158s'
+  name: Back-end server mulanback
+  hosts: ['${BACKEND_HOST}']
+  
+setup.kibana:
+  host: 'kibana:5601'
+
+output.elasticsearch:
+  hosts: ['elasticsearch:9200']
