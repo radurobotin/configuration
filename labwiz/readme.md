@@ -6,8 +6,11 @@
 docker-compose up
 ```
 
-## Run in AWS
+## Run in AWS with CloudWatch logs
 
 ```terminal
-docker-compose up
+docker-compose -f docker-compose.yml -f docker-compose.aws.yml up
 ```
+
+For more info see docs: [Amazon CloudWatch Logs logging driver
+](https://docs.docker.com/config/containers/logging/awslogs/)
