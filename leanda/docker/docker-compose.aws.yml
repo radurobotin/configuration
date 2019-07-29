@@ -1,0 +1,233 @@
+version: '3'
+
+services:
+    eventstore:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    redis:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    rabbitmq:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    mongo:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    # filebeat:
+        # logging:
+        #     driver: awslogs
+        #     options:
+        #         awslogs-region: ${AWS_REGION}
+        #         awslogs-group: ${AWS_LOG_GROUP}
+
+    # logstash:
+        # logging:
+        #     driver: awslogs
+        #     options:
+        #         awslogs-region: ${AWS_REGION}
+        #         awslogs-group: ${AWS_LOG_GROUP}
+
+    # kibana:
+        # logging:
+        #     driver: awslogs
+        #     options:
+        #         awslogs-region: ${AWS_REGION}
+        #         awslogs-group: ${AWS_LOG_GROUP}
+
+    elasticsearch:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    # heartbeat:
+        # logging:
+        #     driver: awslogs
+        #     options:
+        #         awslogs-region: ${AWS_REGION}
+        #         awslogs-group: ${AWS_LOG_GROUP}
+
+    nginx:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    # elasticsearch-curator:
+        # logging:
+        #     driver: awslogs
+        #     options:
+        #         awslogs-region: ${AWS_REGION}
+        #         awslogs-group: ${AWS_LOG_GROUP}
+
+    blob-storage-api:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    metadata-processing:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    indexing:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    core-web-api:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    core-backend:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    core-frontend:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    core-sagahost:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    core-persistence:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    imaging:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    chemical-file-parser:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    reaction-parser:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    crystal-parser:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    spectra-parser:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    office-processor:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    chemical-properties:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    chemical-export:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    web-importer:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    # ml-modeler:
+        # logging:
+        #     driver: awslogs
+        #     options:
+        #         awslogs-region: ${AWS_REGION}
+        #         awslogs-group: ${AWS_LOG_GROUP}
+
+    # ml-predictor:
+        # logging:
+        #     driver: awslogs
+        #     options:
+        #         awslogs-region: ${AWS_REGION}
+        #         awslogs-group: ${AWS_LOG_GROUP}
+
+    # ml-training-reporter:
+        # logging:
+        #     driver: awslogs
+        #     options:
+        #         awslogs-region: ${AWS_REGION}
+        #         awslogs-group: ${AWS_LOG_GROUP}
+
+    # ml-training-optimizer:
+        # logging:
+        #     driver: awslogs
+        #     options:
+        #         awslogs-region: ${AWS_REGION}
+        #         awslogs-group: ${AWS_LOG_GROUP}
+
+    feature-vectors-calculator:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
