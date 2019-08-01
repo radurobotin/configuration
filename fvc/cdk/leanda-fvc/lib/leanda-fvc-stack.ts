@@ -1,9 +1,10 @@
+import cdk = require('@aws-cdk/core');
 import cloudfront = require('@aws-cdk/aws-cloudfront');
 import route53 = require('@aws-cdk/aws-route53');	
 import s3 = require('@aws-cdk/aws-s3');
 import acm = require('@aws-cdk/aws-certificatemanager');
-import cdk = require('@aws-cdk/core');
 import targets = require('@aws-cdk/aws-route53-targets/lib');	
+
 import { Construct } from '@aws-cdk/core';
 
 export interface StaticSiteProps {
