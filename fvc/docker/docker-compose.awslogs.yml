@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+    redis:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    rabbitmq:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    # mongo:
+        # logging:
+        #     driver: awslogs
+        #     options:
+        #         awslogs-region: ${AWS_REGION}
+        #         awslogs-group: ${AWS_LOG_GROUP}
+
+    nginx:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    core-web-api:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
+    feature-vectors-calculator:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
