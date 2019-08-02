@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+    filebeat:
+        image: docker.scidatasoft.com/filebeat
+        container_name: filebeat
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs/
+        networks:
+        - leanda-ext
+        depends_on:
+        - logstash
+
+    logstash:
+        image: docker.scidatasoft.com/logstash
+        container_name: logstash
+        command: -f /config-dir/logstash.conf
+        ports:
+        - "5044:5044"
+        - "12201:12201"
+        - "12201:12201/udp"
+        - "12202:12202"
+        - "12202:12202/udp"
+        networks:
+        - leanda-ext
+        depends_on:
+        - elasticsearch
+
+    kibana:
+        image: docker.elastic.co/kibana/kibana-oss:6.1.1
+        container_name: kibana
+        environment:
+        - ELASTICSEARCH_URL:"elasticsearch:9201"
+        ports:
+        - "5661:5601"
+        networks:
+        - leanda-ext
+
+networks:
+    leanda-ext:
+        external:
+            name: leanda-net
