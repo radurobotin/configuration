@@ -15,20 +15,6 @@ services:
                 awslogs-region: ${AWS_REGION}
                 awslogs-group: ${AWS_LOG_GROUP}
 
-    # mongo:
-        # logging:
-        #     driver: awslogs
-        #     options:
-        #         awslogs-region: ${AWS_REGION}
-        #         awslogs-group: ${AWS_LOG_GROUP}
-
-    nginx:
-        logging:
-            driver: awslogs
-            options:
-                awslogs-region: ${AWS_REGION}
-                awslogs-group: ${AWS_LOG_GROUP}
-
     core-web-api:
         logging:
             driver: awslogs

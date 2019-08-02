@@ -1,62 +1,7 @@
 version: '3'
 
 services:
-    redis:
-        image: redis:4-alpine
-        #mem_limit: 256m
-        # restart: always
-        container_name: redis
-        command: redis-server --appendonly yes
-        ports:
-        - "6379:6379"
-        volumes:
-        - data-redis:/data
-        networks:
-        - leanda-ext
-
-    rabbitmq:
-        image: leanda/rabbitmq
-        #mem_limit: 2g
-        # restart: always
-        container_name: rabbitmq
-        hostname: "rabbitmq-dev"
-        environment:
-        - RABBITMQ_DEFAULT_VHOST=osdr_dev
-        ports:
-        - "8282:15672"
-        - "5671:5671"
-        - "5672:5672"
-        volumes:
-        - data-rabbitmq:/var/lib/rabbitmq
-        networks:
-        - leanda-ext
-
-    # mongo:
-    #     image: mongo:3.6
-    #     #mem_limit: 12g
-    #     # restart: always
-    #     container_name: mongo
-    #     ports:
-    #     - "27017:27017"
-    #     volumes:
-    #     - data-mongo-config:/data/configdb
-    #     - data-mongo-data:/data/db
-    #     networks:
-    #     - leanda-ext
-
-    nginx:
-        image: leanda/nginx
-        container_name: nginx
-        ports:
-        - "80:80"
-        networks:
-        - leanda-ext
-        depends_on:
-        - blob-storage-api
-        - core-web-api
-
     core-web-api:
-        # restart: always
         container_name: core-web-api
         image: leanda/core-web-api:${TAG_VERSION-latest}
         entrypoint: /bin/bash
@@ -68,7 +13,6 @@ services:
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore:1113
         - OSDR_ES=http://elasticsearch:9200
-        # - SWAGGER_BASEPATH=/osdr/v1
         - OSDR_LOG_LEVEL=${OSDR_LOG_LEVEL}
         command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.Osdr.WebApi
         volumes:
@@ -76,18 +20,14 @@ services:
         networks:
         - leanda-ext
         ports:
-        - "28611:18006"
+        - "80:18006"
         depends_on:
         - rabbitmq
-        - eventstore
         - redis
-        - mongo
 
     feature-vectors-calculator:
-        # restart: always
         container_name: feature-vectors-calculator
         image: leanda/ml-feature-vectors-calculator:${TAG_VERSION-latest}
-        #mem_limit: 1g
         environment:
         - OSDR_LOG_FOLDER=/logs
         - OSDR_TEMP_FILES_FOLDER=/temp
@@ -111,11 +51,35 @@ services:
             python ./calculator.py;
           "
 
+    redis:
+        image: redis:4-alpine
+        container_name: redis
+        command: redis-server --appendonly yes
+        ports:
+        - "6379:6379"
+        volumes:
+        - data-redis:/data
+        networks:
+        - leanda-ext
+
+    rabbitmq:
+        image: leanda/rabbitmq
+        container_name: rabbitmq
+        hostname: "rabbitmq-dev"
+        environment:
+        - RABBITMQ_DEFAULT_VHOST=osdr_dev
+        ports:
+        - "8282:15672"
+        - "5671:5671"
+        - "5672:5672"
+        volumes:
+        - data-rabbitmq:/var/lib/rabbitmq
+        networks:
+        - leanda-ext
+
 volumes:
     data-redis:
     data-rabbitmq:
-    # data-mongo-config:
-    # data-mongo-data:
 
 networks:
     leanda-ext:
