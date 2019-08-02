@@ -4,6 +4,8 @@ import route53 = require('@aws-cdk/aws-route53');
 import s3 = require('@aws-cdk/aws-s3');
 import acm = require('@aws-cdk/aws-certificatemanager');
 import targets = require('@aws-cdk/aws-route53-targets/lib');	
+import ec2 = require('@aws-cdk/aws-ec2');
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 
 import { Construct } from '@aws-cdk/core';
 
@@ -34,6 +36,7 @@ export class LeandaFvcStack extends cdk.Stack {
             websiteErrorDocument: 'error.html',
             publicReadAccess: true
         });
+
         new cdk.CfnOutput(this, 'Bucket', { value: siteBucket.bucketName });
 
         // Pre-existing ACM certificate, with the ARN stored in an SSM Parameter
@@ -75,4 +78,28 @@ export class LeandaFvcStack extends cdk.Stack {
             zone
         });
     }
+}
+
+
+class LoadBalancerStack extends cdk.Stack {
+  constructor(app: cdk.App, id: string) {
+    super(app, id);
+
+    const vpc = new ec2.Vpc(this, 'VPC');
+
+    const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+      vpc,
+      internetFacing: true
+    });
+
+    const listener = lb.addListener('Listener', {
+      port: 80,
+    });
+
+    listener.addTargets('Target', {
+      port: 80
+    });
+
+    listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
+  }
 }
