@@ -1,28 +1,6 @@
 version: '3'
 
 services:
-    ui:
-        container_name: ui
-        image: leanda/ui:${TAG_VERSION-latest}
-        environment:
-        - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL}
-        - CORE_API_URL=${CORE_API_URL}
-        - BLOB_STORAGE_API_URL=${BLOB_STORAGE_API_URL}
-        - IMAGING_URL=${IMAGING_URL}
-        - SIGNALR_URL=${SIGNALR_URL}
-        - METADATA_URL=${METADATA_URL}
-        - PROXY_JSMOL_URL=${PROXY_JSMOL_URL}
-        - KETCHER_URL=${KETCHER_URL}
-        - REALM=${REALM}
-        # command: usr/share/wait-for.sh -t 30 blob-storage-api:18006 core-web-api:18006 -- usr/share/setenv.sh && sleep 3 && nginx -g 'daemon off;'
-        networks:
-        - leanda-ext
-        ports:
-        - "5555:80"
-        depends_on:
-        - blob-storage-api
-        - core-web-api
-
     blob-storage-api:
         container_name: blob-storage-api
         entrypoint: /bin/bash
@@ -303,44 +281,6 @@ services:
         networks:
         - leanda-ext
 
-    postgres:
-      container_name: 'keycloak-postgres'
-      image: postgres:10.6
-      environment:
-        POSTGRES_USER: keycloak
-        POSTGRES_PASSWORD: keycloak
-        POSTGRES_DATABASE: keycloak
-        POSTGRES_ROOT_PASSWORD: keycloak
-        pgdata: data-pstgresql
-      ports:
-      - '5432:5432'
-      networks:
-      - leanda-ext
-      volumes:
-      - data-pstgresql:/data
-
-    keycloak:
-        container_name: 'keycloak-server'
-        image: leanda/keycloak:latest
-        environment:
-          DB_VENDOR: POSTGRES
-          KEYCLOAK_USER: admin
-          KEYCLOAK_PASSWORD: admin
-          POSTGRES_USER: keycloak
-          POSTGRES_PASSWORD: keycloak
-          POSTGRES_PORT_5432_TCP_ADDR: postgres
-          POSTGRES_DATABASE: keycloak
-          JDBC_PARAMS: 'connectTimeout=30'
-        ports:
-        - '8080:8080'
-        - '8443:8443'
-        volumes:
-        - data-keycloak:/data
-        networks:
-        - leanda-ext
-        depends_on:
-        - postgres
-
     elasticsearch:
         image: leanda/elasticsearch
         container_name: elasticsearch
@@ -362,8 +302,6 @@ volumes:
     data-elasticsearch:
     data-mongo-config:
     data-mongo-data:
-    data-pstgresql:
-    data-keycloak:
 
 networks:
     leanda-ext:

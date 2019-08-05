@@ -10,7 +10,7 @@ services:
         - "2113:2113"
         - "1113:1113"
         environment:
-        - RUN_PROJECTIONS = All
+        - RUN_PROJECTIONS=All
         volumes:
         - data-eventstore:/var/lib/eventstore
         networks:
@@ -488,6 +488,28 @@ services:
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
         ports:
         - 8986:8086
+        networks:
+        - leanda-ext
+        depends_on:
+        - rabbitmq
+        - mongo
+
+    microscopy-metadata-service:
+        container_name: microscopy-metadata
+        image: leanda/microscopy-metadata:${TAG_VERSION-latest}
+        entrypoint: /bin/bash
+        environment:
+        - TZ=EST
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_TEMP_FILES_FOLDER=/temp
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/leanda
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+        - QUEUE_PREFETCH_SIZE=9
+        - EXECUTOR_THREAD_COUNT=3
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./wait-for-it.sh mongo:27017 -t 60 -- java -jar leanda-microscopy-metadata-service.jar
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs/
+        - ${OSDR_TEMP_FILES_FOLDER}:/temp/
         networks:
         - leanda-ext
         depends_on:
