@@ -491,11 +491,9 @@ services:
         - mongo
 
     chemical-properties:
-        # restart: always
         container_name: chemical-properties
         image: leanda/chemical-properties:${TAG_VERSION-latest}
         entrypoint: /bin/bash
-        #mem_limit: 512m
         environment:
         - TZ=EST
         - OSDR_LOG_FOLDER=/logs
@@ -510,6 +508,28 @@ services:
         - ${OSDR_TEMP_FILES_FOLDER}:/temp
         ports:
         - 8986:8086
+        networks:
+        - leanda-ext
+        depends_on:
+        - rabbitmq
+        - mongo
+
+    microscopy-metadata-service:
+        container_name: microscopy-metadata
+        image: leanda/microscopy-metadata:${TAG_VERSION-latest}
+        entrypoint: /bin/bash
+        environment:
+        - TZ=EST
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_TEMP_FILES_FOLDER=/temp
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/leanda
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+        - QUEUE_PREFETCH_SIZE=9
+        - EXECUTOR_THREAD_COUNT=3
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./wait-for-it.sh mongo:27017 -t 60 -- java -jar leanda-microscopy-metadata-service.jar
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs/
+        - ${OSDR_TEMP_FILES_FOLDER}:/temp/
         networks:
         - leanda-ext
         depends_on:
@@ -688,34 +708,6 @@ services:
     #         sleep 5;
     #         python ./optimizer.py;
     #       "
-
-    feature-vectors-calculator:
-        # restart: always
-        container_name: feature-vectors-calculator
-        image: leanda/ml-feature-vectors-calculator:${TAG_VERSION-latest}
-        #mem_limit: 1g
-        environment:
-        - OSDR_LOG_FOLDER=/logs
-        - OSDR_TEMP_FILES_FOLDER=/temp
-        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
-        - OSDR_RABBIT_MQ_FEATURE_VECTOR_CALCULATOR_MAX_THREADS_NUMBER=32
-        - OSDR_RABBIT_MQ_FEATURE_VECTOR_CALCULATOR_PREFETCH_COUNT=32
-        - REDIS_EXPIRATION_TIME_SECONDS=43200
-        - OSDR_ML_MODELER_CLIENT_ID=${OSDR_ML_MODELER_CLIENT_ID}
-        - OSDR_ML_MODELER_CLIENT_SECRET=${OSDR_ML_MODELER_CLIENT_SECRET}
-        - OSDR_BLOB_SERVICE_TOKEN_URL=${OSDR_BLOB_SERVICE_TOKEN_URL}
-        - OSDR_BLOB_SERVICE_URL=${OSDR_BLOB_SERVICE_URL}
-        - OSDR_API_URL=${CORE_API_URL}
-        volumes:
-        - ${OSDR_LOG_FOLDER}:/logs
-        - ${OSDR_TEMP_FILES_FOLDER}:/temp
-        networks:
-        - leanda-ext
-        command: >
-          /bin/bash -c "
-            sleep 5;
-            python ./calculator.py;
-          "
 
 volumes:
     data-eventstore:
