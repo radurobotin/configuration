@@ -1,30 +1,26 @@
+#!/usr/bin/env node
+import 'source-map-support/register';
 import cdk = require('@aws-cdk/core');
 import cloudfront = require('@aws-cdk/aws-cloudfront');
-import route53 = require('@aws-cdk/aws-route53');	
+import route53 = require('@aws-cdk/aws-route53');
 import s3 = require('@aws-cdk/aws-s3');
 import acm = require('@aws-cdk/aws-certificatemanager');
-import targets = require('@aws-cdk/aws-route53-targets/lib');	
+import targets = require('@aws-cdk/aws-route53-targets/lib');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 
 import { Construct } from '@aws-cdk/core';
+import { EnvironmentUtils } from '@aws-cdk/cx-api';
+
+import { environment } from './environment';
 
 export interface StaticSiteProps {
     domainName: string;
     siteSubDomain: string;
 }
 
-/**
- * Static site infrastructure, which uses an S3 bucket for the content.
- *
- * The site redirects from HTTP to HTTPS, using a CloudFront distribution,
- * Route53 alias record, and ACM certificate.
- *
- * The ACM certificate is expected to be created and validated outside of the CDK,
- * with the certificate ARN stored in an SSM Parameter.
- */
-export class LeandaFvcStack extends cdk.Stack {
-  constructor(parent: Construct, name: string, props: StaticSiteProps) {
+export class LeandaStack extends cdk.Stack {
+    constructor(parent: Construct, name: string, props: StaticSiteProps) {
         super(parent, name);
 
         const siteDomain = props.siteSubDomain + '.' + props.domainName;
@@ -48,7 +44,7 @@ export class LeandaFvcStack extends cdk.Stack {
         const distribution = new cloudfront.CloudFrontWebDistribution(this, 'SiteDistribution', {
             aliasConfiguration: {
                 acmCertRef: certificateArn,
-                names: [ siteDomain ],
+                names: [siteDomain],
                 sslMethod: cloudfront.SSLMethod.SNI,
                 securityPolicy: cloudfront.SecurityPolicyProtocol.TLS_V1_1_2016,
             },
@@ -57,7 +53,7 @@ export class LeandaFvcStack extends cdk.Stack {
                     s3OriginSource: {
                         s3BucketSource: siteBucket
                     },
-                    behaviors : [ {isDefaultBehavior: true}],
+                    behaviors: [{ isDefaultBehavior: true }],
                 }
             ]
         });
@@ -77,29 +73,33 @@ export class LeandaFvcStack extends cdk.Stack {
             target: route53.AddressRecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
             zone
         });
+
+        super(app, id);
+
+        const vpc = new ec2.Vpc(this, 'VPC');
+
+        const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+            vpc,
+            internetFacing: true
+        });
+
+        const listener = lb.addListener('Listener', {
+            port: 80,
+        });
+
+        listener.addTargets('Target', {
+            port: 80
+        });
+
+        listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
+
     }
 }
 
 
-class LoadBalancerStack extends cdk.Stack {
-  constructor(app: cdk.App, id: string) {
-    super(app, id);
+const app = new cdk.App();
 
-    const vpc = new ec2.Vpc(this, 'VPC');
-
-    const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
-      vpc,
-      internetFacing: true
-    });
-
-    const listener = lb.addListener('Listener', {
-      port: 80,
-    });
-
-    listener.addTargets('Target', {
-      port: 80
-    });
-
-    listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
-  }
-}
+new LeandaStack(app, 'LeandaStack', {
+    domainName: environment.domainName,
+    siteSubDomain: environment.siteSubDomain
+});
