@@ -4,7 +4,7 @@
 
 * VPC with one public subnet
 * Internet Gateway
-* EC2
+* EC2 Spot Fleet
 * Route53 alias record for the API
 * S3 bucket for the front-end
 

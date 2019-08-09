@@ -14,6 +14,8 @@ export class LeandaStack extends cdk.Stack {
 
         new ec2.Vpc(this, `${env.stackName}-VPC`);
 
+        new ec2.CfnSpotFleet(this, `${env.stackName}-SpotFleet`, {spotFleetRequestConfigData:''});
+
         const ipAddress = '';
 
         const zone = route53.HostedZone.fromHostedZoneId(this, `${env.stackName}-HostedZone`, env.domain);
