@@ -8,25 +8,18 @@ import acm = require('@aws-cdk/aws-certificatemanager');
 import targets = require('@aws-cdk/aws-route53-targets/lib');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-
 import { Construct } from '@aws-cdk/core';
-import { EnvironmentUtils } from '@aws-cdk/cx-api';
 
-import { environment } from './environment';
-
-export interface StaticSiteProps {
-    domainName: string;
-    siteSubDomain: string;
-}
+import { environment as env } from './environment';
 
 export class LeandaStack extends cdk.Stack {
-    constructor(parent: Construct, name: string, props: StaticSiteProps) {
+    constructor(parent: Construct, name: string) {
         super(parent, name);
 
-        const siteDomain = props.siteSubDomain + '.' + props.domainName;
+        const siteDomain = env.siteSubDomain + '.' + env.domainName;
 
         // Content bucket
-        const siteBucket = new s3.Bucket(this, 'SiteBucket', {
+        const siteBucket = new s3.Bucket(this, `${env.stackName}-SiteBucket`, {
             bucketName: siteDomain,
             websiteIndexDocument: 'index.html',
             websiteErrorDocument: 'error.html',
@@ -36,12 +29,12 @@ export class LeandaStack extends cdk.Stack {
         new cdk.CfnOutput(this, 'Bucket', { value: siteBucket.bucketName });
 
         // Pre-existing ACM certificate, with the ARN stored in an SSM Parameter
-        const certificateArn = new acm.Certificate(this, 'ArnParameter', {
-            domainName: props.domainName
+        const certificateArn = new acm.Certificate(this, `${env.stackName}-ArnParameter`, {
+            domainName: env.domainName
         }).certificateArn;
 
         // CloudFront distribution that provides HTTPS
-        const distribution = new cloudfront.CloudFrontWebDistribution(this, 'SiteDistribution', {
+        const distribution = new cloudfront.CloudFrontWebDistribution(this, `${env.stackName}-SiteDistribution`, {
             aliasConfiguration: {
                 acmCertRef: certificateArn,
                 names: [siteDomain],
@@ -57,7 +50,8 @@ export class LeandaStack extends cdk.Stack {
                 }
             ]
         });
-        new cdk.CfnOutput(this, 'DistributionId', { value: distribution.distributionId });
+
+        new cdk.CfnOutput(this, `${env.stackName}-Distribution`, { value: distribution.distributionId });
 
         /**
          * NOTE: the code below is not transpiling properly to JavaScript
@@ -65,25 +59,23 @@ export class LeandaStack extends cdk.Stack {
          */
 
         // Route53 alias record for the CloudFront distribution
-        const zone = new route53.HostedZone(this, 'MyHostedZone', {
-            zoneName: props.domainName
+        const zone = new route53.HostedZone(this, `${env.stackName}-HostedZone`, {
+            zoneName: env.domainName
         });
-        new route53.ARecord(this, 'SiteAliasRecord', {
+        new route53.ARecord(this, `${env.stackName}-SiteAliasRecord`, {
             recordName: siteDomain,
             target: route53.AddressRecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
             zone
         });
 
-        super(app, id);
+        const vpc = new ec2.Vpc(this, `${env.stackName}-VPC`);
 
-        const vpc = new ec2.Vpc(this, 'VPC');
-
-        const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+        const lb = new elbv2.ApplicationLoadBalancer(this, `${env.stackName}-LB`, {
             vpc,
             internetFacing: true
         });
 
-        const listener = lb.addListener('Listener', {
+        const listener = lb.addListener(`${env.stackName}-Listener`, {
             port: 80,
         });
 
@@ -96,10 +88,6 @@ export class LeandaStack extends cdk.Stack {
     }
 }
 
-
 const app = new cdk.App();
 
-new LeandaStack(app, 'LeandaStack', {
-    domainName: environment.domainName,
-    siteSubDomain: environment.siteSubDomain
-});
+new LeandaStack(app, `${env.stackName}-LeandaStack`);
