@@ -1,5 +1,6 @@
 export const environment = {
-    domainName: 'leanda.io',
-    siteSubDomain: 'fvc',
-    stackName: 'FVC'
+    stackName: 'FVC',
+    domain: 'leanda.io',
+    subDomain: 'fvc',
+    availabilityZone: 'us-east-1f'
 }
