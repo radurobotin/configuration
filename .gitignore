@@ -1,3 +1,4 @@
 # Logs and temp files from services
 logs/
 temp/
+node_modules/
