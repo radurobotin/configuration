@@ -160,7 +160,7 @@ services:
         environment:
         - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL}
         - OSDR_LOG_FOLDER=/logs
-        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         # - SWAGGER_BASEPATH=/blob/v1
         command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.Storage.Blob.WebApi
@@ -181,7 +181,7 @@ services:
         entrypoint: /bin/bash
         environment:
         - OSDR_LOG_FOLDER=/logs
-        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.MetadataStorage.Processing
         volumes:
@@ -200,7 +200,7 @@ services:
         entrypoint: /bin/bash
         environment:
         - OSDR_LOG_FOLDER=/logs
-        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         - OSDR_ES=http://elasticsearch:9200
         command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.Indexing
@@ -222,7 +222,7 @@ services:
         - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL}
         - OSDR_REDIS=redis
         - OSDR_LOG_FOLDER=/logs
-        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore:1113
         - OSDR_ES=http://elasticsearch:9200
@@ -248,7 +248,7 @@ services:
         entrypoint: /bin/bash
         environment:
         - OSDR_LOG_FOLDER=/logs
-        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore:1113
         - OSDR_REDIS=redis
@@ -272,7 +272,7 @@ services:
         entrypoint: /bin/bash
         environment:
         - OSDR_LOG_FOLDER=/logs
-        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore:1113
         - OSDR_REDIS=redis
@@ -291,7 +291,7 @@ services:
         entrypoint: /bin/bash
         environment:
         - OSDR_LOG_FOLDER=/logs
-        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.Osdr.Domain.SagaHost
         volumes:
@@ -311,7 +311,7 @@ services:
         entrypoint: /bin/bash
         environment:
         - OSDR_LOG_FOLDER=/logs
-        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.Osdr.Persistence
         volumes:
