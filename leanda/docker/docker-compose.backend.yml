@@ -192,6 +192,7 @@ services:
         - "11050:11050"
         depends_on:
         - rabbitmq
+        - mongo
 
     indexing:
         # restart: always
@@ -211,7 +212,9 @@ services:
         ports:
         - "11090:11090"
         depends_on:
+        - elasticsearch
         - rabbitmq
+        - mongo
 
     core-web-api:
         # restart: always
@@ -236,6 +239,7 @@ services:
         ports:
         - "28611:18006"
         depends_on:
+        - elasticsearch
         - rabbitmq
         - eventstore
         - redis
@@ -283,6 +287,10 @@ services:
         - leanda-ext
         ports:
         - "11020:11020"
+        depends_on:
+        - rabbitmq
+        - eventstore
+        
 
     core-sagahost:
         # restart: always
@@ -514,7 +522,8 @@ services:
         - leanda-ext
         depends_on:
         - rabbitmq  
-          mongo
+        - mongo
+
     chemical-export:
         # restart: always
         container_name: chemical-export
