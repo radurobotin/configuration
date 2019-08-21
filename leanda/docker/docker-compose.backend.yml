@@ -204,7 +204,7 @@ services:
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         - OSDR_ES=http://elasticsearch:9200
-        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.Indexing
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./wait-for-it.sh mongo:27017 -t 60 -- ./wait-for-it.sh elasticsearch:9200/_cat/health -t 60 -- ./Sds.Indexing
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
@@ -231,7 +231,7 @@ services:
         - OSDR_ES=http://elasticsearch:9200
         # - SWAGGER_BASEPATH=/osdr/v1
         - OSDR_LOG_LEVEL=${OSDR_LOG_LEVEL}
-        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.Osdr.WebApi
+        command: ./wait-for-it.sh rabbitmq:5672 -- ./wait-for-it.sh elasticsearch:9200/_cat/health -t 60 -t 60 -- ./Sds.Osdr.WebApi
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         networks:
