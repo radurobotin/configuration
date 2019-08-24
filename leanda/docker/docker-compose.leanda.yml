@@ -73,6 +73,7 @@ services:
         # restart: always
         container_name: indexing
         image: leanda/indexing:${TAG_VERSION-latest}
+        entrypoint: /bin/bash
         environment:
         - OSDR_LOG_FOLDER=/logs
         - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
@@ -80,6 +81,7 @@ services:
         - OSDR_ES=http://elasticsearch:9200
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./wait-for-it.sh mongo:27017 -t 60 -- ./wait-for-it.sh elasticsearch:9200 -t 60 -- ./Sds.Indexing
         networks:
         - leanda-ext
         ports:
