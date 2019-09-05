@@ -698,33 +698,62 @@ services:
     #         python ./optimizer.py;
     #       "
 
-    feature-vectors-calculator:
-        # restart: always
-        container_name: feature-vectors-calculator
-        image: leanda/ml-feature-vectors-calculator:${TAG_VERSION-latest}
-        #mem_limit: 1g
-        environment:
-        - OSDR_LOG_FOLDER=/logs
-        - OSDR_TEMP_FILES_FOLDER=/temp
-        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
-        - OSDR_RABBIT_MQ_FEATURE_VECTOR_CALCULATOR_MAX_THREADS_NUMBER=32
-        - OSDR_RABBIT_MQ_FEATURE_VECTOR_CALCULATOR_PREFETCH_COUNT=32
-        - REDIS_EXPIRATION_TIME_SECONDS=43200
-        - OSDR_ML_MODELER_CLIENT_ID=${OSDR_ML_MODELER_CLIENT_ID}
-        - OSDR_ML_MODELER_CLIENT_SECRET=${OSDR_ML_MODELER_CLIENT_SECRET}
-        - OSDR_BLOB_SERVICE_TOKEN_URL=${OSDR_BLOB_SERVICE_TOKEN_URL}
-        - OSDR_BLOB_SERVICE_URL=${OSDR_BLOB_SERVICE_URL}
-        - OSDR_API_URL=${CORE_API_URL}
-        volumes:
-        - ${OSDR_LOG_FOLDER}:/logs
-        - ${OSDR_TEMP_FILES_FOLDER}:/temp
-        networks:
-        - leanda-ext
-        command: >
-          /bin/bash -c "
-            sleep 5;
-            python ./calculator.py;
-          "
+    # feature-vectors-calculator:
+    #     # restart: always
+    #     container_name: feature-vectors-calculator
+    #     image: leanda/ml-feature-vectors-calculator:${TAG_VERSION-latest}
+    #     #mem_limit: 1g
+    #     environment:
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_TEMP_FILES_FOLDER=/temp
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     - OSDR_RABBIT_MQ_FEATURE_VECTOR_CALCULATOR_MAX_THREADS_NUMBER=32
+    #     - OSDR_RABBIT_MQ_FEATURE_VECTOR_CALCULATOR_PREFETCH_COUNT=32
+    #     - REDIS_EXPIRATION_TIME_SECONDS=43200
+    #     - OSDR_ML_MODELER_CLIENT_ID=${OSDR_ML_MODELER_CLIENT_ID}
+    #     - OSDR_ML_MODELER_CLIENT_SECRET=${OSDR_ML_MODELER_CLIENT_SECRET}
+    #     - OSDR_BLOB_SERVICE_TOKEN_URL=${OSDR_BLOB_SERVICE_TOKEN_URL}
+    #     - OSDR_BLOB_SERVICE_URL=${OSDR_BLOB_SERVICE_URL}
+    #     - OSDR_API_URL=${CORE_API_URL}
+    #     volumes:
+    #     - ${OSDR_LOG_FOLDER}:/logs
+    #     - ${OSDR_TEMP_FILES_FOLDER}:/temp
+    #     networks:
+    #     - leanda-ext
+    #     command: >
+    #       /bin/bash -c "
+    #         sleep 5;
+    #         python ./calculator.py;
+    #       "
+
+    # ml-single-structure-predictor:
+    #     container_name: ml-single-structure-predictor
+    #     image: docker.scidatasoft.com/osdr-ml-single-structure-predictor:${TAG_VERSION-latest}
+    #     environment:
+    #     - OSDR_LOG_FOLDER=/logs
+    #     - OSDR_TEMP_FILES_FOLDER=/temp
+    #     - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+    #     - OSDR_BLOB_SERVICE_TOKEN_URL=${IDENTITY_SERVER_URL}/protocol/openid-connect/token
+    #     - OSDR_BLOB_SERVICE_URL=${BLOB_STORAGE_API_URL_UNESCAPED}
+    #     - OSDR_ML_MODELER_CLIENT_SECRET=52461d3c-7f0b-4b72-a508-1e7febaacabb
+    #     - OSDR_RABBIT_MQ_ML_SINGLE_STRUCTURE_PREDICTOR_MAX_THREADS_NUMBER=32
+    #     - OSDR_RABBIT_MQ_ML_SINGLE_STRUCTURE_PREDICTOR_PREFETCH_COUNT=32
+    #     - API_MODELS_ENTITIES_URL=${CORE_API_URL}/entities/models/public
+    #     volumes:
+    #     # TODO temporary hardcoded part
+    #     - /home/logs:/logs/
+    #     - /home/temp/ml_services:/temp/
+    #     # - ${OSDR_LOG_FOLDER}:/logs
+    #     # - ${OSDR_TEMP_FILES_FOLDER}:/temp
+    #     depends_on:
+    #     - blob-storage-api
+    #     networks:
+    #     - leanda-ext
+    #     command: >
+    #       /bin/bash -c "
+    #         sleep 5;
+    #         python ./single_structure_predictor.py;
+    #       "
 
 volumes:
     data-eventstore:

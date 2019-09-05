@@ -197,6 +197,13 @@ services:
                 awslogs-region: ${AWS_REGION}
                 awslogs-group: ${AWS_LOG_GROUP}
 
+    microscopy-metadata-service:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
     # ml-modeler:
         # logging:
         #     driver: awslogs
@@ -225,9 +232,16 @@ services:
         #         awslogs-region: ${AWS_REGION}
         #         awslogs-group: ${AWS_LOG_GROUP}
 
-    feature-vectors-calculator:
-        logging:
-            driver: awslogs
-            options:
-                awslogs-region: ${AWS_REGION}
-                awslogs-group: ${AWS_LOG_GROUP}
+    # feature-vectors-calculator:
+    #     logging:
+    #         driver: awslogs
+    #         options:
+    #             awslogs-region: ${AWS_REGION}
+    #             awslogs-group: ${AWS_LOG_GROUP}
+
+    # ml-single-structure-predictor:
+    #     logging:
+    #         driver: awslogs
+    #         options:
+    #             awslogs-region: ${AWS_REGION}
+    #             awslogs-group: ${AWS_LOG_GROUP}
