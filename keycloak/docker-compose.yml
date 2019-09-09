@@ -14,6 +14,8 @@ services:
       - '5432:5432'
       volumes:
       - data-pstgresql:/var/lib/postgres
+      networks:
+      - leanda-ext
 
     keycloak:
         container_name: 'keycloak-server'
@@ -32,9 +34,16 @@ services:
         - '443:8443'
         volumes:
         - data-keycloak:/var/lib/keycloak
+        networks:
+        - leanda-ext
         depends_on:
         - postgres
 
 volumes:
     data-keycloak:
     data-pstgresql:
+
+networks:
+    leanda-ext:
+        external:
+            name: leanda-net
