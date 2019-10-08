@@ -197,7 +197,7 @@ services:
 
     core-web-api:
         container_name: core-web-api
-        image: leanda/core-web-api:${TAG_VERSION-latest}
+        image: leanda/core-web-api:local
         entrypoint: /bin/bash
         environment:
         - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL}
@@ -225,7 +225,7 @@ services:
 
     core-backend:
         container_name: core-backend
-        image: leanda/core-backend:${TAG_VERSION-latest}
+        image: leanda/core-backend:local
         entrypoint: /bin/bash
         environment:
         - OSDR_LOG_FOLDER=/logs
@@ -248,7 +248,7 @@ services:
 
     core-frontend:
         container_name: core-frontend
-        image: leanda/core-frontend:${TAG_VERSION-latest}
+        image: leanda/core-frontend:local
         entrypoint: /bin/bash
         environment:
         - OSDR_LOG_FOLDER=/logs
@@ -270,7 +270,7 @@ services:
 
     core-sagahost:
         container_name: core-sagahost
-        image: leanda/core-sagahost:${TAG_VERSION-latest}
+        image: leanda/core-sagahost:local
         entrypoint: /bin/bash
         environment:
         - OSDR_LOG_FOLDER=/logs
@@ -289,7 +289,7 @@ services:
 
     core-persistence:
         container_name: core-persistence
-        image: leanda/core-persistence:${TAG_VERSION-latest}
+        image: leanda/core-persistence:local
         entrypoint: /bin/bash
         environment:
         - OSDR_LOG_FOLDER=/logs
