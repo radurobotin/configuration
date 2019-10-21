@@ -486,9 +486,6 @@ services:
         - ${OSDR_TEMP_FILES_FOLDER}:/temp/
         networks:
         - leanda-ext
-        depends_on:
-        - rabbitmq
-        - mongo
 
     chemical-export:
         container_name: chemical-export
