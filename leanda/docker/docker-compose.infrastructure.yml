@@ -89,43 +89,45 @@ services:
     #     depends_on:
     #     - postgres
 
-    # filebeat:
-    #     image: docker.scidatasoft.com/filebeat
-    #     container_name: filebeat
-    #     volumes:
-    #     - /home/logs:/logs/
-    #     networks:
-    #     - leanda-ext
-    #     depends_on:
-    #     - logstash
+    filebeat:
+        image: leanda/filebeat:latest
+        container_name: filebeat
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs/
+        networks:
+        - leanda-ext
+        
 
-    # logstash:
-    #     image: docker.scidatasoft.com/logstash
-    #     container_name: logstash
-    #     command: -f /config-dir/logstash.conf
-    #     ports:
-    #     - "5044:5044"
-    #     - "12201:12201"
-    #     - "12201:12201/udp"
-    #     - "12202:12202"
-    #     - "12202:12202/udp"
-    #     networks:
-    #     - leanda-ext
-    #     depends_on:
-    #     - elasticsearch
+    logstash:
+        image: leanda/logstash:latest
+        container_name: logstash
+        command: -f /config-dir/logstash.conf
+        ports:
+        - "5044:5044"
+        - "12201:12201"
+        - "12201:12201/udp"
+        - "12202:12202"
+        - "12202:12202/udp"
+        networks:
+        - leanda-ext
+        depends_on:
+        - filebeat
 
-    # kibana:
-    #     image: docker.elastic.co/kibana/kibana-oss:6.1.1
-    #     container_name: kibana
-    #     environment:
-    #     - ELASTICSEARCH_URL:"elasticsearch:9201"
-    #     ports:
-    #     - "5661:5601"
-    #     networks:
-    #     - leanda-ext
+    kibana:
+        image: docker.elastic.co/kibana/kibana-oss:6.8.4
+        container_name: kibana
+        environment:
+        - ELASTICSEARCH_URL:"elasticsearch:9201"
+        ports:
+        - "5661:5601"
+        networks:
+        - leanda-ext
+        depends_on:
+        - elasticsearch
+        - logstash
 
     elasticsearch:
-        image: leanda/elasticsearch
+        image: leanda/elasticsearch:latest
         container_name: elasticsearch
         environment:
         - discovery.type=single-node
