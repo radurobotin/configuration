@@ -204,6 +204,13 @@ services:
                 awslogs-region: ${AWS_REGION}
                 awslogs-group: ${AWS_LOG_GROUP}
 
+    categories:
+        logging:
+            driver: awslogs
+            options:
+                awslogs-region: ${AWS_REGION}
+                awslogs-group: ${AWS_LOG_GROUP}
+
     # ml-modeler:
         # logging:
         #     driver: awslogs
