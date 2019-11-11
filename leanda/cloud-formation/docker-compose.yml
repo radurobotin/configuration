@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+    nginx:
+        image: leanda/nginx
+        ports:
+        - "80:80"
+
+    blob-storage-api:
+        entrypoint: /bin/bash
+        image: leanda/blob-storage-webapi:${TAG_VERSION-latest}
+        environment:
+        - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL}
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr_dev
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - MAX_BLOB_SIZE=${MAX_BLOB_SIZE}
+        command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.Storage.Blob.WebApi
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        ports:
+        - "18006:18006"
+
+    mongo:
+        image: mongo:3.6
+        ports:
+        - "27017:27017"
+        volumes:
+        - data-mongo-config:/data/configdb
+        - data-mongo-data:/data/db
+
+    rabbitmq:
+        image: leanda/rabbitmq
+        hostname: "rabbitmq-dev"
+        environment:
+        - RABBITMQ_DEFAULT_VHOST=osdr_dev
+        ports:
+        - "8282:15672"
+        - "5671:5671"
+        - "5672:5672"
+        volumes:
+        - data-rabbitmq:/var/lib/rabbitmq
+
+volumes:
+    data-mongo-config:
+    data-mongo-data:
+    data-rabbitmq:
