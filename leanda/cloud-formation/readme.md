@@ -6,8 +6,10 @@ Create a new stack by uploading `ec2-spotInsance-ECS-Cluster.yml`. Specify the c
 
 ## Start all services
 
-Replace cluster name if needed.
+Replace cluster name if needed. It needs to use a valid cluster (as created with the above CF template)
 
 ```terminal
-ecs-cli compose up --region us-east-1 --cluster LEANDA --aws-profile default
+ecs-cli compose up --cluster LEANDA --cluster-config leanda --force-update --launch-type EC2 --create-log-groups --aws-profile default
 ```
+
+
