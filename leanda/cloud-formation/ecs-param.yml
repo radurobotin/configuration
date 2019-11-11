@@ -2,14 +2,18 @@ version: 1
 task_definition:
   services:
     rabbitmq:
-      cpu_shares: 512
-      mem_limit: 262144000
+      cpu_shares: 256
+      mem_limit: 0.5GB
+      mem_reservation: 0.5GB
     mongo:
-      cpu_shares: 512
-      mem_limit: 262144000
+      cpu_shares: 256
+      mem_limit: 0.5GB
+      mem_reservation: 0.5GB
     nginx:
-      cpu_shares: 512
-      mem_limit: 262144000
+      cpu_shares: 256
+      mem_limit: 0.5GB
+      mem_reservation: 0.5GB
     blob-storage-api:
-      cpu_shares: 512
-      mem_limit: 262144000
+      cpu_shares: 256
+      mem_limit: 0.5GB
+      mem_reservation: 0.5GB
