@@ -3,6 +3,12 @@ version: '3'
 services:
     nginx:
         image: leanda/nginx
+        logging:
+            driver: awslogs
+            options: 
+                awslogs-group: leanda
+                awslogs-region: us-east-1
+                awslogs-stream-prefix: nginx
         ports:
         - "80:80"
 
@@ -16,6 +22,12 @@ services:
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
         - MAX_BLOB_SIZE=${MAX_BLOB_SIZE}
         command: ./wait-for-it.sh rabbitmq:5672 -t 60 -- ./Sds.Storage.Blob.WebApi
+        logging:
+            driver: awslogs
+            options: 
+                awslogs-group: leanda
+                awslogs-region: us-east-1
+                awslogs-stream-prefix: blob-storage
         volumes:
         - ${OSDR_LOG_FOLDER}:/logs
         ports:
@@ -23,6 +35,12 @@ services:
 
     mongo:
         image: mongo:3.6
+        logging:
+            driver: awslogs
+            options: 
+                awslogs-group: leanda
+                awslogs-region: us-east-1
+                awslogs-stream-prefix: mongo
         ports:
         - "27017:27017"
         volumes:
@@ -34,6 +52,12 @@ services:
         hostname: "rabbitmq-dev"
         environment:
         - RABBITMQ_DEFAULT_VHOST=osdr_dev
+        logging:
+            driver: awslogs
+            options: 
+                awslogs-group: leanda
+                awslogs-region: us-east-1
+                awslogs-stream-prefix: rabbit
         ports:
         - "8282:15672"
         - "5671:5671"
