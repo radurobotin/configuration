@@ -11,5 +11,3 @@ Replace cluster name if needed. It needs to use a valid cluster (as created with
 ```terminal
 ecs-cli compose up --cluster LEANDA --cluster-config leanda --force-update --launch-type EC2 --create-log-groups --aws-profile default
 ```
-
-

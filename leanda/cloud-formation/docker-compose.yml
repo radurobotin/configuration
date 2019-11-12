@@ -1,16 +1,19 @@
 version: '3'
 
 services:
-    nginx:
-        image: leanda/nginx
+    mongo:
+        image: mongo:3.6
         logging:
             driver: awslogs
-            options: 
+            options:
                 awslogs-group: leanda
                 awslogs-region: us-east-1
-                awslogs-stream-prefix: nginx
+                awslogs-stream-prefix: mongo
         ports:
-        - "80:80"
+        - "27017:27017"
+        volumes:
+        - data-mongo-config:/data/configdb
+        - data-mongo-data:/data/db
 
     blob-storage-api:
         entrypoint: /bin/bash
@@ -32,24 +35,12 @@ services:
         - ${OSDR_LOG_FOLDER}:/logs
         ports:
         - "18006:18006"
-
-    mongo:
-        image: mongo:3.6
-        logging:
-            driver: awslogs
-            options: 
-                awslogs-group: leanda
-                awslogs-region: us-east-1
-                awslogs-stream-prefix: mongo
-        ports:
-        - "27017:27017"
-        volumes:
-        - data-mongo-config:/data/configdb
-        - data-mongo-data:/data/db
+        links:
+        - mongo
+        - rabbitmq
 
     rabbitmq:
         image: leanda/rabbitmq
-        hostname: "rabbitmq-dev"
         environment:
         - RABBITMQ_DEFAULT_VHOST=osdr_dev
         logging:
