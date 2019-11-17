@@ -1,16 +1,16 @@
-Description: This CF creates a SSL certificate, S3 bucket and Cloudfront distribution to be used fo LEANDA
+Description: This CF creates a SSL certificate, S3 bucket and Cloudfront distribution.
 
 Parameters:
 
   DomainName:
     Type: String
     Description: The domain name.
-    Default: labwiz.leanda.io
+    Default: leanda.io
 
   FullDomainName:
     Type: String
     Description: The full domain name e.g. 
-    Default: leanda.io
+    Default: labwiz.leanda.io
     AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
     ConstraintDescription: must be a valid DNS zone name.
 
@@ -23,6 +23,11 @@ Parameters:
       - 'PriceClass_200'
       - 'PriceClass_All'
 
+  Certif:
+    Type: String
+    Description: The ARN of the Certificate to be used with this Distribution
+
+
 Resources:
    # DNS:
    #     Type: AWS::Route53::HostedZone
@@ -34,21 +39,21 @@ Resources:
    #     - Key: Application
    #         Value: labwiz
 
-  Certif:
-    Type: AWS::CertificateManager::Certificate
-    Properties:
-      DomainName: !Ref DomainName
-      DomainValidationOptions:
-        - DomainName: !Ref DomainName
-          ValidationDomain: !Ref DomainName
-      ValidationMethod: DNS
+  # Certif:
+  #   Type: AWS::CertificateManager::Certificate
+  #   Properties:
+  #     DomainName: !Ref DomainName
+  #     DomainValidationOptions:
+  #       - DomainName: !Ref DomainName
+  #         ValidationDomain: !Ref DomainName
+  #     ValidationMethod: DNS
 
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
         Aliases:
-          - !Ref DomainName
+          - !Ref FullDomainName
         DefaultCacheBehavior:
           Compress: true
           ForwardedValues:
