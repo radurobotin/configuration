@@ -204,6 +204,10 @@ Parameters:
     Type: Number
     Description: If greater than 0, then a EC2 Spot instance will be requested
     Default: '0'
+  EBSSnapshotID:
+    Type: String
+    Description: Optional - The Snapshot ID to be used as an additional EBS volume for preserving data between instances
+    Default: 'snap-0f1acdea21df28450'
   KeyName:
     Type: String
     Description: Optional - Name of an existing EC2 KeyPair to enable SSH access to
@@ -450,6 +454,13 @@ Resources:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
       ImageId: !Ref 'EcsAmiId'
+      BlockDeviceMappings: 
+      - DeviceName: "/dev/xvdf"
+        Ebs: 
+          DeleteOnTermination: false
+          Encrypted: false
+          SnapshotId: !Ref EBSSnapshotID
+          VolumeType: gp2
       InstanceType: !Ref 'EcsInstanceType'
       SpotPrice: !If
         - UseSpotInstances
@@ -469,6 +480,12 @@ Resources:
         Fn::Base64: !Sub |
           #!/bin/bash -xe
           echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+          ## Wait for EBS mount to become available
+          while [ ! -e /dev/xvdf ]; do echo waiting for /dev/xvdf to attach; sleep 10; done
+          sudo mkfs -t ext4 /dev/xvdf
+          sudo mkdir -p /var/lib/docker
+          sudo mount /dev/xvdf /var/lib/docker
+                              
   EcsInstanceAsg:
     Condition: LaunchInstances
     Type: AWS::AutoScaling::AutoScalingGroup
