@@ -31,6 +31,8 @@ ecs-cli compose up --cluster LEANDA --cluster-config leanda --force-update --lau
 
 ### docker-compose files
 
+ECS has a restriction of 10 containers per task definion.
+
 `docker-compose.1.yml`
 
 ```terminal
@@ -52,21 +54,26 @@ core-backend
 core-frontend
 core-web-api
 indexing
+imaging
+office-processor
 ```
 
 `docker-compose.3.yml`
 
 ```terminal
-categories
 chemical-export
 chemical-file-parser
 chemical-properties
 crystal-file-parser
-imaging
 metadata-processing
-microscopy-metadata
-office-processor
 reaction-file-parser
 spectra-file-parser
 web-importer
+```
+
+`docker-compose.4.yml`
+
+```terminal
+categories
+microscopy-metadata
 ```
