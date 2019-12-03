@@ -97,7 +97,6 @@ services:
         networks:
         - leanda-ext
         
-
     logstash:
         image: leanda/logstash:latest
         container_name: logstash
