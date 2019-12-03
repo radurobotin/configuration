@@ -39,7 +39,6 @@ ECS has a restriction of 10 containers per task definion.
 elasticsearch
 eventstore
 mongo
-nginx
 rabbitmq
 redis
 ```
@@ -47,6 +46,7 @@ redis
 `docker-compose.2.yml`
 
 ```terminal
+nginx
 blob-storage-api
 core-persistence
 core-sagahost

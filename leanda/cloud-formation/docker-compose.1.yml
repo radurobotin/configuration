@@ -80,20 +80,6 @@ services:
                 awslogs-region: ${AWS_REGION}
                 awslogs-stream-prefix: elasticsearch
 
-    nginx:
-        image: leanda/nginx
-        ports:
-        - "80:80"
-        links:
-        - blob-storage-api
-        - core-web-api
-        logging:
-            driver: awslogs
-            options: 
-                awslogs-group: ${AWS_LOG_GROUP}
-                awslogs-region: ${AWS_REGION}
-                awslogs-stream-prefix: nginx
-
 volumes:
     data-eventstore:
     data-redis:

@@ -25,3 +25,6 @@ task_definition:
     imaging:
       cpu_shares: 512
       mem_limit: 262144000
+    nginx:
+      cpu_shares: 512
+      mem_limit: 262144000
