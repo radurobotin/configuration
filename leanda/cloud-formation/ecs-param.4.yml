@@ -1,0 +1,9 @@
+version: 1
+task_definition:
+  services:
+    categories:
+      cpu_shares: 512
+      mem_limit: 262144000
+    microscopy-metadata-service:
+      cpu_shares: 512
+      mem_limit: 262144000

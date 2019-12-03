@@ -1,0 +1,27 @@
+version: 1
+task_definition:
+  services:
+    blob-storage-api:
+      cpu_shares: 512
+      mem_limit: 262144000
+    indexing:
+      cpu_shares: 512
+      mem_limit: 262144000
+    core-web-api:
+      cpu_shares: 512
+      mem_limit: 262144000
+    core-backend:
+      cpu_shares: 512
+      mem_limit: 262144000
+    core-frontend:
+      cpu_shares: 512
+      mem_limit: 262144000
+    core-sagahost:
+      cpu_shares: 512
+      mem_limit: 262144000
+    core-persistence:
+      cpu_shares: 512
+      mem_limit: 262144000
+    imaging:
+      cpu_shares: 512
+      mem_limit: 262144000

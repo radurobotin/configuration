@@ -1,0 +1,21 @@
+version: 1
+task_definition:
+  services:
+    eventstore:
+      cpu_shares: 512
+      mem_limit: 262144000
+    redis:
+      cpu_shares: 512
+      mem_limit: 262144000
+    rabbitmq:
+      cpu_shares: 512
+      mem_limit: 262144000
+    mongo:
+      cpu_shares: 512
+      mem_limit: 262144000
+    elasticsearch:
+      cpu_shares: 512
+      mem_limit: 262144000
+    nginx:
+      cpu_shares: 512
+      mem_limit: 262144000
