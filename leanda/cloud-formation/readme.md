@@ -1,8 +1,25 @@
 # Leanda AWS CloudFormation
 
-## Create a new cluster
+## Create a new cluster for back-end services
 
-Create a new stack by uploading `cf-backend.yml`. Specify the cluster name (LEANDA is the default, for example).
+Create a new stack by uploading `cf-backend.yml`.
+
+Specify the following:
+
+* Cluster name (LEANDA is the default, for example).
+* Snapshot ID (look it up under EC/Snapshots in AWS Console).
+* Price for the EC2 Spot Instance
+
+## Create infrastructure for front-end services
+
+Create a new stack by uploading `cf-frontend.yml`.
+
+Specify the following:
+
+* The ARN of the certificate to be used with this distribution (lookup under Certificate Manager in AWS Console)
+* The root domain name (default leanda.io)
+* The full domain name e.g. labwiz.leanda.io
+* PriceClass The CloudFront distribution price class
 
 ## Start all services
 
@@ -12,7 +29,7 @@ Replace cluster name if needed. It needs to use a valid cluster (as created with
 ecs-cli compose up --cluster LEANDA --cluster-config leanda --force-update --launch-type EC2 --create-log-groups --aws-profile default
 ```
 
-## docker-compose files
+### docker-compose files
 
 `docker-compose.1.yml`
 
