@@ -483,8 +483,8 @@ Resources:
           ## Wait for EBS mount to become available
           while [ ! -e /dev/xvdf ]; do echo waiting for /dev/xvdf to attach; sleep 10; done
           # sudo mkfs -t ext4 /dev/xvdf
-          sudo mkdir -p /var/lib/docker
-          sudo mount /dev/xvdf /var/lib/docker
+          sudo mkdir -p /mnt
+          sudo mount /dev/xvdf /mnt
                               
   EcsInstanceAsg:
     Condition: LaunchInstances
