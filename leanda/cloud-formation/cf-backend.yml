@@ -17,7 +17,7 @@ Parameters:
   EcsInstanceType:
     Type: String
     Description: ECS EC2 instance type
-    Default: t2.micro
+    Default: t3a.xlarge
     AllowedValues:
       - p2.xlarge
       - p2.8xlarge
@@ -203,16 +203,16 @@ Parameters:
   SpotPrice:
     Type: Number
     Description: If greater than 0, then a EC2 Spot instance will be requested
-    Default: '0'
+    Default: '0.5'
   EBSSnapshotID:
     Type: String
     Description: Optional - The Snapshot ID to be used as an additional EBS volume for preserving data between instances
-    Default: 'snap-0f1acdea21df28450'
+    Default: 'snap-0486ccc27599aa5ac'
   KeyName:
     Type: String
     Description: Optional - Name of an existing EC2 KeyPair to enable SSH access to
       the ECS instances
-    Default: ''
+    Default: 'Leanda'
   VpcId:
     Type: String
     Description: Optional - VPC Id of existing VPC. Leave blank to have a new VPC
