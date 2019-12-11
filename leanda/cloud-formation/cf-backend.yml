@@ -207,7 +207,7 @@ Parameters:
   EBSSnapshotID:
     Type: String
     Description: Optional - The Snapshot ID to be used as an additional EBS volume for preserving data between instances
-    Default: 'snap-0486ccc27599aa5ac'
+    Default: 'snap-0bf6652701c91c9ee'
   KeyName:
     Type: String
     Description: Optional - Name of an existing EC2 KeyPair to enable SSH access to

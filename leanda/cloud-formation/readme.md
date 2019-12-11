@@ -77,3 +77,7 @@ web-importer
 categories
 microscopy-metadata
 ```
+
+## Limiting resources
+
+The number of CPU units used by the task. It can be expressed as an integer using CPU units, for example 1024, or as a string using vCPUs, for example '1 vCPU' or '1 vcpu'.
