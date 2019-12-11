@@ -485,6 +485,8 @@ Resources:
           # sudo mkfs -t ext4 /dev/xvdf
           sudo mkdir -p /mnt
           sudo mount /dev/xvdf /mnt
+          sudo rm -rf /var/lib/docker/volumes
+          sudo ln -s /mnt/volumes /var/lib/docker
                               
   EcsInstanceAsg:
     Condition: LaunchInstances
