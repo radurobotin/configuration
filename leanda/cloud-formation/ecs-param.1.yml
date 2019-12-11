@@ -3,17 +3,17 @@ task_definition:
   services:
     eventstore:
       cpu_shares: 512
-      mem_limit: 262144000
+      mem_limit: 1073741824
     redis:
       cpu_shares: 512
       mem_limit: 262144000
     rabbitmq:
       cpu_shares: 512
-      mem_limit: 262144000
+      mem_limit: 1073741824
     mongo:
       cpu_shares: 512
-      mem_limit: 262144000
+      mem_limit: 1073741824
     elasticsearch:
       cpu_shares: 512
-      mem_limit: 262144000
+      mem_limit: 2147483648
 
