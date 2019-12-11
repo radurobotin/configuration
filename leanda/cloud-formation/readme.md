@@ -26,7 +26,13 @@ Specify the following:
 Replace cluster name if needed. It needs to use a valid cluster (as created with the above CF template)
 
 ```terminal
-ecs-cli compose up --cluster LEANDA --cluster-config leanda --force-update --launch-type EC2 --create-log-groups --aws-profile default
+ecs-cli compose --project-name leanda --file docker-compose.1.yml --ecs-params ecs-param.1.yml up --launch-type EC2 --aws-profile default --create-log-groups --cluster-config leanda --cluster LEANDA --force-update
+
+ecs-cli compose --project-name leanda --file docker-compose.2.yml --ecs-params ecs-param.2.yml up --launch-type EC2 --aws-profile default --create-log-groups --cluster-config leanda --cluster LEANDA --force-update
+
+ecs-cli compose --project-name leanda --file docker-compose.3.yml --ecs-params ecs-param.3.yml up --launch-type EC2 --aws-profile default --create-log-groups --cluster-config leanda --cluster LEANDA --force-update
+
+ecs-cli compose --project-name leanda --file docker-compose.4.yml --ecs-params ecs-param.4.yml up --launch-type EC2 --aws-profile default --create-log-groups --cluster-config leanda --cluster LEANDA --force-update
 ```
 
 ### docker-compose files

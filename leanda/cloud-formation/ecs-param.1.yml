@@ -16,4 +16,3 @@ task_definition:
     elasticsearch:
       cpu_shares: 256
       mem_limit: 2147483648
-
