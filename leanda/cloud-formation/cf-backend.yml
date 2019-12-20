@@ -13,7 +13,7 @@ Parameters:
   EcsAmiId:
     Type: String
     Description: ECS EC2 AMI id
-    Default: 'ami-08fa2eb77f5afe360'
+    Default: 'ami-00afc256a955c31b5'
   EcsInstanceType:
     Type: String
     Description: ECS EC2 instance type
