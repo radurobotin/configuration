@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+    eventstore:
+        image: eventstore/eventstore:release-4.0.2
+        ports:
+        - "2113:2113"
+        - "1113:1113"
+        environment:
+            - RUN_PROJECTIONS=All
+        volumes:
+            - data-eventstore:/var/lib/eventstore
+        logging:
+            driver: awslogs
+            options: 
+                awslogs-group: ${AWS_LOG_GROUP}
+                awslogs-region: ${AWS_REGION}
+                awslogs-stream-prefix: eventstore
+
+
+volumes:
+    data-eventstore:
