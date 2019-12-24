@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+    blob:
+        image: leanda/blob-storage-webapi:${TAG_VERSION-latest}
+        entrypoint: /bin/bash
+        environment:
+        - IDENTITY_SERVER_URL=${IDENTITY_SERVER_URL}
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_MONGO_DB=mongodb://leanda.mongo:27017/osdr_dev
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq.leanda:5672/osdr_dev
+        - MAX_BLOB_SIZE=${MAX_BLOB_SIZE}
+        command: ./wait-for-it.sh rabbitmq.leanda:5672 -t 60 -- ./Sds.Storage.Blob.WebApi
+        ports:
+        - "18006:18006"
+        logging:
+            driver: awslogs
+            options: 
+                awslogs-group: ${AWS_LOG_GROUP}
+                awslogs-region: ${AWS_REGION}
+                awslogs-stream-prefix: blob-storage-api
+
