@@ -17,7 +17,7 @@ Parameters:
   EcsInstanceType:
     Type: String
     Description: ECS EC2 instance type
-    Default: t3a.xlarge
+    Default: m5ad.xlarge
     AllowedValues:
       - p2.xlarge
       - p2.8xlarge
