@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+    office-processor:
+        image: leanda/office-file-processor:${TAG_VERSION-latest}
+        entrypoint: /bin/bash
+        environment:
+        - TZ=EST
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_TEMP_FILES_FOLDER=/temp
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq.leanda:5672/osdr_dev
+        - OSDR_MONGO_DB=mongodb://mongo.leanda:27017/osdr_dev
+        - QUEUE_PREFETCH_SIZE=9
+        - EXECUTOR_THREAD_COUNT=2
+        command: ./wait-for-it.sh rabbitmq.leanda:5672 -t 60 -- ./wait-for-it.sh mongo.leanda:27017 -t 60 -- java -XX:NativeMemoryTracking=summary -jar office-file-processor.jar
+
+        ports:
+        - 8087:8087
+
+        logging:
+            driver: awslogs
+            options: 
+                awslogs-group: ${AWS_LOG_GROUP}
+                awslogs-region: ${AWS_REGION}
+                awslogs-stream-prefix: office-processor

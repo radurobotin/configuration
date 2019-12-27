@@ -1,22 +1,19 @@
 version: '3'
 
 services:
-    indexing:
-        image: leanda/indexing:${TAG_VERSION-latest}
+    metadata-processing:
+        image: leanda/metadata-processing:${TAG_VERSION-latest}
         entrypoint: /bin/bash
         environment:
         - OSDR_LOG_FOLDER=/logs
         - OSDR_MONGO_DB=mongodb://mongo.leanda:27017/osdr_dev
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq.leanda:5672/osdr_dev
-        - OSDR_ES=https://elastic.leanda:9200
-        command: ./wait-for-it.sh rabbitmq.leanda:5672 -t 60 -- ./wait-for-it.sh mongo.leanda:27017 -t 60 -- ./wait-for-it.sh elastic.leanda:9200 -t 60 -- ./Sds.Indexing
-
+        command: ./wait-for-it.sh rabbitmq.leanda:5672 -t 60 -- ./Sds.MetadataStorage.Processing
         ports:
-        - "11090:11090"
-      
+        - "11050:11050"
         logging:
             driver: awslogs
             options: 
                 awslogs-group: ${AWS_LOG_GROUP}
                 awslogs-region: ${AWS_REGION}
-                awslogs-stream-prefix: indexing
+                awslogs-stream-prefix: metadata-processing

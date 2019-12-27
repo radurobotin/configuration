@@ -1,20 +1,21 @@
 version: '3'
 
 services:
-    categories: 
-        image: leanda/categories-service:${TAG_VERSION-latest}
+    crystal-parser:
+        image: leanda/crystal-file-parser:${TAG_VERSION-latest}
         entrypoint: /bin/bash
-        environment: 
+        environment:
+        - TZ=EST
         - OSDR_LOG_FOLDER=/logs
         - OSDR_TEMP_FILES_FOLDER=/temp
         - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq.leanda:5672/osdr_dev
         - OSDR_MONGO_DB=mongodb://mongo.leanda:27017/osdr_dev
-        - OSDR_ES=http://elastic.leanda:9200
-        command: ./wait-for-it.sh rabbitmq.leanda:5672 -t 60 -- ./wait-for-it.sh mongo.leanda:27017 -t 60 -- ./wait-for-it.sh elastic.leanda:9200 -t 60 -- ./Leanda.Categories.Processing
-
+        - QUEUE_PREFETCH_SIZE=9
+        - EXECUTOR_THREAD_COUNT=3
+        command: ./wait-for-it.sh rabbitmq.leanda:5672 -t 60 -- ./wait-for-it.sh mongo.leanda:27017 -t 60 -- java -XX:NativeMemoryTracking=summary -jar crystal-parser.jar
         logging:
             driver: awslogs
             options: 
                 awslogs-group: ${AWS_LOG_GROUP}
                 awslogs-region: ${AWS_REGION}
-                awslogs-stream-prefix: categories
+                awslogs-stream-prefix: crystal-parser

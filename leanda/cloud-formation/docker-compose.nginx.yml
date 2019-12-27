@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+     nginx:
+        image: leanda/nginx
+        ports:
+        - "80:80"
+        logging:
+            driver: awslogs
+            options: 
+                awslogs-group: ${AWS_LOG_GROUP}
+                awslogs-region: ${AWS_REGION}
+                awslogs-stream-prefix: nginx
