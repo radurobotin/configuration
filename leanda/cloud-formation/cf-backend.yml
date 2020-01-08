@@ -1,14 +1,18 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: AWS CloudFormation template to create an Autoscaling Group of SPOT Instances in an ECS cluster - for LEANDA
+Description: AWS CloudFormation template to create a VPC a and Autoscaling Group of SPOT Instances in an ECS cluster and  - for LEANDA
 
 Mappings:
   VpcCidrs:
     vpc:
-      cidr: 10.0.0.0/16
+      cidr: 11.0.0.0/16
     pubsubnet1:
-      cidr: 10.0.0.0/24
+      cidr: 11.0.0.0/24
     pubsubnet2:
-      cidr: 10.0.1.0/24
+      cidr: 11.0.1.0/24
+    privsubnet1:
+      cidr: 11.0.2.0/24
+    privsubnet2:
+      cidr: 11.0.3.0/24
 Parameters:
   EcsAmiId:
     Type: String
@@ -318,7 +322,7 @@ Resources:
     Type: AWS::ECS::Cluster
     Properties: 
       ClusterName: !Ref ECSCluster
-      Tags: []
+
   Vpc:
     Condition: CreateVpcResources
     Type: AWS::EC2::VPC
@@ -368,6 +372,44 @@ Resources:
           - '1'
           - !GetAZs
             Ref: AWS::Region
+  PrivSubnetAz1:
+    Condition: CreateVpcResources
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref 'Vpc'
+      CidrBlock: !FindInMap
+        - VpcCidrs
+        - privsubnet1
+        - cidr
+      Tags: []
+      AvailabilityZone: !If
+        - UseSpecifiedVpcAvailabilityZones
+        - !Select
+          - '0'
+          - !Ref 'VpcAvailabilityZones'
+        - !Select
+          - '0'
+          - !GetAZs
+            Ref: AWS::Region
+  PrivSubnetAz2:
+    Condition: CreateVpcResources
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref 'Vpc'
+      CidrBlock: !FindInMap
+        - VpcCidrs
+        - privsubnet2
+        - cidr
+      Tags: []
+      AvailabilityZone: !If
+        - UseSpecifiedVpcAvailabilityZones
+        - !Select
+          - '1'
+          - !Ref 'VpcAvailabilityZones'
+        - !Select
+          - '1'
+          - !GetAZs
+            Ref: AWS::Region
   InternetGateway:
     Condition: CreateVpcResources
     Type: AWS::EC2::InternetGateway
@@ -405,6 +447,49 @@ Resources:
     Properties:
       SubnetId: !Ref 'PubSubnetAz2'
       RouteTableId: !Ref 'RouteViaIgw'
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Condition: CreateVpcResources
+    Properties:
+      VpcId: !Ref 'Vpc'
+      Tags: []
+  PrivateRoute1:            # Private route table can access web via NAT (created below)
+    Type: AWS::EC2::Route
+    Condition: CreateVpcResources
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      # We are using a NAT Gateway, route traffic through the NAT Gateway:
+      NatGatewayId:  !Ref NATGateway
+  PrivateSubnetARouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Condition: CreateVpcResources
+    Properties:
+      SubnetId: !Ref PrivSubnetAz1
+      RouteTableId: !Ref PrivateRouteTable
+  PrivateSubnetBRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Condition: CreateVpcResources
+    Properties:
+      SubnetId: !Ref PrivSubnetAz2
+      RouteTableId: !Ref PrivateRouteTable
+  
+  NATGateway:
+    Type: AWS::EC2::NatGateway
+    Condition: CreateVpcResources
+    Properties: 
+      AllocationId: !GetAtt ElasticIPAddress.AllocationId
+      SubnetId: !Ref  PubSubnetAz1
+      Tags: 
+      - Key: Name
+        Value: !Sub NAT-${AWS::StackName}
+  ElasticIPAddress:
+    Type: AWS::EC2::EIP
+    Condition: CreateVpcResources
+    Properties:
+      Domain: Vpc
+
   EcsSecurityGroup:
     Condition: CreateSecurityGroup
     Type: AWS::EC2::SecurityGroup
@@ -420,6 +505,24 @@ Resources:
           FromPort: !Ref 'EcsPort'
           ToPort: !Ref 'EcsPort'
           CidrIp: !Ref 'SourceCidr'
+  FargateSecurityGroup:
+    Condition: CreateSecurityGroup
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Fargate SG allow traffic from within VPC
+      Tags: []
+      VpcId: !If
+        - CreateVpcResources
+        - !Ref 'Vpc'
+        - !Ref 'VpcId'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: !FindInMap
+            - VpcCidrs
+            - vpc
+            - cidr
   EcsInstanceRole:
     Condition: CreateEcsInstanceRole
     Type: AWS::IAM::Role
@@ -507,3 +610,40 @@ Resources:
         - Key: Name
           Value: ECS Instance - LEANDA
           PropagateAtLaunch: true
+
+Outputs:
+  VPC:
+    Description: VPC of the base network
+    Value: !Ref Vpc
+    Export:
+      Name: !Sub ${AWS::StackName}-VPC
+  PublicSubnetA:
+    Description: First Public Subnet
+    Condition: CreateVpcResources
+    Value: !Ref PubSubnetAz1
+    Export:
+      Name: !Sub ${AWS::StackName}-PubSubnetAz1
+  PublicSubnetB:
+    Description: Second Public Subnet
+    Condition: CreateVpcResources
+    Value: !Ref PubSubnetAz2
+    Export:
+      Name: !Sub ${AWS::StackName}-PubSubnetAz2
+  PrivateSubnetA:
+    Description: First Private Subnet
+    Condition: CreateVpcResources
+    Value: !Ref PrivSubnetAz1
+    Export:
+      Name: !Sub ${AWS::StackName}-PrivSubnetAz1
+  PrivateSubnetB:
+    Condition: CreateVpcResources
+    Description: Second Private Subnet
+    Value: !Ref PrivSubnetAz2
+    Export:
+      Name: !Sub ${AWS::StackName}-PrivSubnetAz2
+  FargateSG:
+    Condition: CreateVpcResources
+    Description: Fargate Security Group
+    Value: !Ref FargateSecurityGroup
+    Export:
+      Name: !Sub ${AWS::StackName}-FargateSecurityGroup
