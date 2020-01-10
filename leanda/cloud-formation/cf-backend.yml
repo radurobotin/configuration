@@ -18,6 +18,8 @@ Parameters:
     Type: String
     Description: ECS EC2 AMI id
     Default: 'ami-00afc256a955c31b5'
+  #  Default: 'ami-062f7200baf2fa504'
+  #  Default: 'ami-0ff8a91507f77f867'
   EcsInstanceType:
     Type: String
     Description: ECS EC2 instance type
@@ -579,10 +581,14 @@ Resources:
         - CreateSecurityGroup
         - - !Ref 'EcsSecurityGroup'
         - !Ref 'SecurityGroupIds'
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash -xe
-          echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+      UserData: 
+        'Fn::Base64': !Sub |
+          #!/bin/bash -ex
+          echo "ECS_CLUSTER=${ECSCluster}" >> /etc/ecs/ecs.config
+          sudo yum install -y aws-cfn-bootstrap
+          sudo ls /opt/aws/bin
+          #test
+          /opt/aws/bin/cfn-signal -s true --stack ${AWS::StackName} --resource EcsInstanceAsg --region ${AWS::Region}
           ## Wait for EBS mount to become available
           while [ ! -e /dev/xvdf ]; do echo waiting for /dev/xvdf to attach; sleep 10; done
           # sudo mkfs -t ext4 /dev/xvdf
@@ -590,10 +596,23 @@ Resources:
           sudo mount /dev/xvdf /mnt
           sudo rm -rf /var/lib/docker/volumes
           sudo ln -s /mnt/volumes /var/lib/docker
-                              
+
+
   EcsInstanceAsg:
     Condition: LaunchInstances
     Type: AWS::AutoScaling::AutoScalingGroup
+    CreationPolicy:
+        ResourceSignal:
+          Count: 1
+          Timeout: "PT25M"
+    UpdatePolicy:
+      AutoScalingScheduledAction:
+        IgnoreUnmodifiedGroupSizeProperties: 'true'
+      AutoScalingRollingUpdate:
+        MinInstancesInService: '1'
+        MaxBatchSize: '2'
+        PauseTime: PT1M
+        WaitOnResourceSignals: 'true'
     Properties:
       VPCZoneIdentifier: !If
         - CreateVpcResources
