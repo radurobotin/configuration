@@ -1,0 +1,26 @@
+version: 1
+task_definition:
+  task_execution_role: ecsTaskExecutionRole
+  ecs_network_mode: awsvpc
+  task_size:
+    mem_limit: 0.5GB
+    cpu_limit: 256
+run_params:
+  network_configuration:
+    awsvpc_configuration:
+      subnets:
+          - I___SUBNET_1___I
+          - I___SUBNET_2___I
+      security_groups:
+        - I___FARGATE_SG___I
+      assign_public_ip: DISABLED
+
+  services:
+    core-persistence:
+      cpu_shares: 256
+      mem_limit: 262144000
+      ecs_network_mode: awsvpc
+    core-sagahost:
+      cpu_shares: 256
+      mem_limit: 262144000
+      ecs_network_mode: awsvpc

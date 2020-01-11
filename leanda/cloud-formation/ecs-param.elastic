@@ -1,0 +1,43 @@
+version: 1
+task_definition:
+  ecs_network_mode: awsvpc
+  task_size:
+    mem_limit: 2GB
+    cpu_limit: 256
+run_params:
+  network_configuration:
+    awsvpc_configuration:
+      subnets:
+          - I___SUBNET_1___I
+          - I___SUBNET_2___I
+      security_groups:
+        - I___FARGATE_SG___I
+      assign_public_ip: DISABLED
+
+  services:
+    eventstore:
+      cpu_shares: 256
+      mem_limit: 1073741824
+      ecs_network_mode: awsvpc
+    redis:
+      cpu_shares: 256
+      mem_limit: 262144000
+      ecs_network_mode: awsvpc
+    rabbitmq:
+      cpu_shares: 256
+      mem_limit: 1073741824
+      ecs_network_mode: awsvpc
+      
+    mongo:
+      cpu_shares: 256
+      mem_limit: 1073741824
+      ecs_network_mode: awsvpc
+    elastic:
+      cpu_shares: 256
+      mem_limit: 2GB
+      ecs_network_mode: awsvpc
+    blob:
+      cpu_shares: 256
+      mem_limit: 1073741824
+      ecs_network_mode: awsvpc
+      

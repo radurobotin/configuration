@@ -596,7 +596,19 @@ Resources:
           sudo mount /dev/xvdf /mnt
           sudo rm -rf /var/lib/docker/volumes
           sudo ln -s /mnt/volumes /var/lib/docker
-
+        
+            # #!/bin/bash -xe
+            # /opt/aws/bin/cfn-signal -s true --stack ${AWS::StackName} --resource EcsInstanceAsg --region ${AWS::Region}
+            # echo "ECS_CLUSTER=${ECSCluster}" >> /etc/ecs/ecs.config
+            # ## Wait for EBS mount to become available
+            # while [ ! -e /dev/xvdf ]; do echo waiting for /dev/xvdf to attach; sleep 10; done
+            # # sudo mkfs -t ext4 /dev/xvdf
+            # sudo mkdir -p /mnt
+            # sudo mount /dev/xvdf /mnt
+            # sudo rm -rf /var/lib/docker/volumes
+            # sudo ln -s /mnt/volumes /var/lib/docker
+            
+          
 
   EcsInstanceAsg:
     Condition: LaunchInstances
