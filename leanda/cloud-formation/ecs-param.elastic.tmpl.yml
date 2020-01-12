@@ -36,7 +36,7 @@ run_params:
       cpu_shares: 256
       mem_limit: 2GB
       ecs_network_mode: awsvpc
-    blob:
+    blob-storage-webapi:
       cpu_shares: 256
       mem_limit: 1073741824
       ecs_network_mode: awsvpc

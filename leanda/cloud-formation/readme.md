@@ -53,13 +53,13 @@ eventstore
 mongo
 rabbitmq
 redis
+blob-storage-webapi
 ```
 
 `docker-compose.2.yml`
 
 ```terminal
 nginx
-blob-storage-api
 core-persistence
 core-sagahost
 core-backend

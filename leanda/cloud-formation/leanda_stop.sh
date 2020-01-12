@@ -50,10 +50,9 @@ ecs-cli compose --project-name chemical-file-parser --file docker-compose.chemic
 ecs-cli compose --project-name metadata-processing --file docker-compose.metadata-processing.yml  service down --cluster LEANDA  --aws-profile=${p};
 ecs-cli compose --project-name crystal-parser --file docker-compose.crystal-parser.yml  service down --cluster LEANDA  --aws-profile=${p};
 
-
 ecs-cli compose --project-name imaging --file docker-compose.imaging.yml  service down --cluster LEANDA  --aws-profile=${p};
 ecs-cli compose --project-name indexing --file docker-compose.indexing.yml   service down --cluster LEANDA  --aws-profile=${p};
-ecs-cli compose --project-name webapi --file docker-compose.webapi.yml  service down --cluster LEANDA  --aws-profile=${p};
+ecs-cli compose --project-name core-webapi --file docker-compose.core-webapi.yml  service down --cluster LEANDA  --aws-profile=${p};
 ecs-cli compose --project-name core-frontend --file docker-compose.core-frontend.yml  service down --cluster LEANDA  --aws-profile=${p};
 ecs-cli compose --project-name core-backend --file docker-compose.core-backend.yml service down --cluster LEANDA  --aws-profile=${p};
 ecs-cli compose --project-name sagahost --file docker-compose.sagahost.yml   service down --cluster LEANDA  --aws-profile=${p};
@@ -61,7 +60,7 @@ ecs-cli compose --project-name core-persistence --file docker-compose.core-persi
 ecs-cli compose --project-name eventstore --file docker-compose.eventstore.yml  service down --cluster LEANDA  --aws-profile=${p};
 ecs-cli compose --project-name redis --file docker-compose.redis.yml  service down --cluster LEANDA  --aws-profile=${p};
 ecs-cli compose --project-name rabbitmq --file docker-compose.rabbit.yml   service down --cluster LEANDA  --aws-profile=${p};
-ecs-cli compose --project-name blob --file docker-compose.blob.yml  service down --cluster LEANDA  --aws-profile=${p};
+ecs-cli compose --project-name blob-storage-webapi --file docker-compose.blob-storage-webapi.yml  service down --cluster LEANDA  --aws-profile=${p};
 ecs-cli compose --project-name mongo --file docker-compose.mongo.yml  service down --cluster LEANDA  --aws-profile=${p};
 ecs-cli compose --project-name elastic --file docker-compose.elastic.yml  service down --cluster LEANDA --delete-namespace --aws-profile=${p};
 

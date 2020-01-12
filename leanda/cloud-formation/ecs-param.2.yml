@@ -1,9 +1,6 @@
 version: 1
 task_definition:
   services:
-    blob-storage-api:
-      cpu_shares: 256
-      mem_limit: 262144000
     indexing:
       cpu_shares: 256
       mem_limit: 262144000

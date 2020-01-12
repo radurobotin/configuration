@@ -3,6 +3,9 @@ version: '3'
 services:
      nginx:
         image: leanda/nginx
+        environment:
+        - BLOB_API=http://blob-storage-webapi.leanda/
+        - CORE_API=http://core-web-api.leanda/
         ports:
         - "80:80"
         logging:
