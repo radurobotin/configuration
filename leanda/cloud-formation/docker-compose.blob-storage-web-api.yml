@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-    blob-storage-webapi:
+    blob-storage-web-api:
         image: leanda/blob-storage-webapi:${TAG_VERSION-latest}
         entrypoint: /bin/bash
         environment:
@@ -18,5 +18,5 @@ services:
             options: 
                 awslogs-group: ${AWS_LOG_GROUP}
                 awslogs-region: ${AWS_REGION}
-                awslogs-stream-prefix: blob-storage-webapi
+                awslogs-stream-prefix: blob-storage-web-api
 

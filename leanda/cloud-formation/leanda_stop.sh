@@ -58,12 +58,12 @@ echo "Removing system secondary services..."
 
 echo "Removing system core services..."
 
-ecs-cli compose --project-name core-webapi --file docker-compose.core-webapi.yml  service down --cluster LEANDA  --aws-profile=${p};
+ecs-cli compose --project-name core-web-api --file docker-compose.core-web-api.yml  service down --cluster LEANDA  --aws-profile=${p};
 ecs-cli compose --project-name core-frontend --file docker-compose.core-frontend.yml  service down --cluster LEANDA  --aws-profile=${p};
 ecs-cli compose --project-name core-backend --file docker-compose.core-backend.yml service down --cluster LEANDA  --aws-profile=${p};
 ecs-cli compose --project-name sagahost --file docker-compose.sagahost.yml   service down --cluster LEANDA  --aws-profile=${p};
 ecs-cli compose --project-name core-persistence --file docker-compose.core-persistence.yml  service down --cluster LEANDA  --aws-profile=${p};
-ecs-cli compose --project-name blob-storage-webapi --file docker-compose.blob-storage-webapi.yml  service down --cluster LEANDA  --aws-profile=${p};
+ecs-cli compose --project-name blob-storage-web-api --file docker-compose.blob-storage-web-api.yml  service down --cluster LEANDA  --aws-profile=${p};
 
 echo "Removing infrastructure services..."
 

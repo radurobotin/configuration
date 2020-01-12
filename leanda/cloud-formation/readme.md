@@ -53,7 +53,7 @@ eventstore
 mongo
 rabbitmq
 redis
-blob-storage-webapi
+blob-storage-web-api
 ```
 
 `docker-compose.2.yml`

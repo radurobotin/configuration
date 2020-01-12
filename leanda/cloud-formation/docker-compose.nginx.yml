@@ -4,7 +4,7 @@ services:
      nginx:
         image: leanda/nginx
         environment:
-        - BLOB_API=http://blob-storage-webapi.leanda/
+        - BLOB_API=http://blob-storage-web-api.leanda/
         - CORE_API=http://core-web-api.leanda/
         ports:
         - "80:80"

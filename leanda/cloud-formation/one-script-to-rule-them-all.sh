@@ -2,7 +2,7 @@
 
 ecs-cli compose --project-name elastic --file docker-compose.elastic.yml --ecs-params ecs-param.elastic.yml service up --launch-type EC2 --create-log-groups  --cluster LEANDA --private-dns-namespace leanda  --vpc vpc-0f7d689f1b8d3615b --enable-service-discovery  --aws-profile arqisoft ;
 ecs-cli compose --project-name mongo --file docker-compose.mongo.yml --ecs-params ecs-param.1.yml service up --launch-type EC2 --create-log-groups  --cluster LEANDA --private-dns-namespace leanda  --vpc vpc-0f7d689f1b8d3615b --enable-service-discovery  --aws-profile arqisoft ;
-ecs-cli compose --project-name blob-storage-webapi --file docker-compose.blob-storage-webapi.yml --ecs-params ecs-param.1.yml service up --launch-type EC2 --create-log-groups  --cluster LEANDA --private-dns-namespace leanda  --vpc vpc-0f7d689f1b8d3615b --enable-service-discovery  --aws-profile arqisoft ;
+ecs-cli compose --project-name blob-storage-web-api --file docker-compose.blob-storage-web-api.yml --ecs-params ecs-param.1.yml service up --launch-type EC2 --create-log-groups  --cluster LEANDA --private-dns-namespace leanda  --vpc vpc-0f7d689f1b8d3615b --enable-service-discovery  --aws-profile arqisoft ;
 ecs-cli compose --project-name rabbitmq --file docker-compose.rabbit.yml --ecs-params ecs-param.1.yml service up --launch-type EC2 --create-log-groups  --cluster LEANDA --private-dns-namespace leanda  --vpc vpc-0f7d689f1b8d3615b --enable-service-discovery  --aws-profile arqisoft ;
 ecs-cli compose --project-name redis --file docker-compose.redis.yml --ecs-params ecs-param.1.yml service up --launch-type EC2 --create-log-groups  --cluster LEANDA --private-dns-namespace leanda  --vpc vpc-0f7d689f1b8d3615b --enable-service-discovery  --aws-profile arqisoft ;
 ecs-cli compose --project-name eventstore --file docker-compose.eventstore.yml --ecs-params ecs-param.1.yml service up --launch-type EC2 --create-log-groups  --cluster LEANDA --private-dns-namespace leanda  --vpc vpc-0f7d689f1b8d3615b --enable-service-discovery  --aws-profile arqisoft ;
@@ -34,7 +34,7 @@ ecs-cli compose --project-name categories --file docker-compose.categories.yml -
 #turning off all services
 
 ecs-cli compose --project-name eventstore --file docker-compose.eventstore.yml --ecs-params ecs-param.1.yml service down --cluster LEANDA --delete-namespace --aws-profile arqisoft;
-ecs-cli compose --project-name blob-storage-webapi --file docker-compose.blob-storage-webapi.yml --ecs-params ecs-param.1.yml service down  --cluster LEANDA   --aws-profile arqisoft;
+ecs-cli compose --project-name blob-storage-web-api --file docker-compose.blob-storage-web-api.yml --ecs-params ecs-param.1.yml service down  --cluster LEANDA   --aws-profile arqisoft;
 ecs-cli compose --project-name elastic --file docker-compose.elastic.yml --ecs-params ecs-param.1.yml service down  --cluster LEANDA  --aws-profile arqisoft;
 ecs-cli compose --project-name mongo --file docker-compose.mongo.yml --ecs-params ecs-param.1.yml service down --cluster LEANDA --aws-profile arqisoft;
 ecs-cli compose --project-name redis --file docker-compose.redis.yml --ecs-params ecs-param.1.yml service down --cluster LEANDA   --aws-profile arqisoft;
