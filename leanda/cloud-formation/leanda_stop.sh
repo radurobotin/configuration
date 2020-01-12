@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-usage() { echo "Usage: $0  [-p <aws_profile>] where <aws_profile> is the name you have saved your AWS Credentials in ~/.aws/credentials. This command requires that you have installes aws-cli, ecs-cli and jq. " 1>&2; exit 1; }
+usage() { echo "Usage: $0  [-p <aws_profile>] where <aws_profile> is the name you have saved your AWS Credentials in ~/.aws/credentials. This command requires that you have installed aws-cli, ecs-cli and jq. " 1>&2; exit 1; }
 
 while getopts ":p:" o; do
     case "${o}" in
@@ -68,5 +68,3 @@ ecs-cli compose --project-name elastic --file docker-compose.elastic.yml  servic
 echo "Removing main CloudFormation stack ..."
 
 aws cloudformation delete-stack --stack-name LeandaLabWiz   --profile=${p}  || exit $?
-
-
