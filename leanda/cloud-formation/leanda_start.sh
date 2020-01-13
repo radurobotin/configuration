@@ -57,11 +57,11 @@ sed "s/I___SUBNET_1___I/$SUBNET1/g;s/I___SUBNET_2___I/$SUBNET2/g;s/I___FARGATE_S
 
 echo "Starting infrastructure services..."
 
-ecs-cli compose --project-name elastic --file docker-compose.elastic.yml --ecs-params ecs-param.elastic.gen.yml service up --launch-type EC2 --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discover --aws-profile=${p} ;
-ecs-cli compose --project-name mongo --file docker-compose.mongo.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discover --aws-profile=${p} ;
-ecs-cli compose --project-name rabbitmq --file docker-compose.rabbit.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discover --aws-profile=${p} ;
-ecs-cli compose --project-name redis --file docker-compose.redis.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discover --aws-profile=${p} ;
-ecs-cli compose --project-name eventstore --file docker-compose.eventstore.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discover --aws-profile=${p} ;
+ecs-cli compose --project-name elastic --file docker-compose.elastic.yml --ecs-params ecs-param.elastic.gen.yml service up --launch-type EC2 --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
+ecs-cli compose --project-name mongo --file docker-compose.mongo.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
+ecs-cli compose --project-name rabbitmq --file docker-compose.rabbit.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
+ecs-cli compose --project-name redis --file docker-compose.redis.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
+ecs-cli compose --project-name eventstore --file docker-compose.eventstore.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
 
 echo "Starting system core services..."
 
@@ -74,8 +74,8 @@ ecs-cli compose --project-name core-web-api --file docker-compose.core-web-api.y
 
 echo "Starting system secondary services..."
 
-ecs-cli compose --project-name imaging --file docker-compose.imaging.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discover --aws-profile=${p};
-ecs-cli compose --project-name indexing --file docker-compose.indexing.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discover --aws-profile=${p};
+ecs-cli compose --project-name imaging --file docker-compose.imaging.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name indexing --file docker-compose.indexing.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
 ecs-cli compose --project-name office-processor --file docker-compose.office-processor.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
 
 echo "Starting other services..."
@@ -93,4 +93,4 @@ ecs-cli compose --project-name categories --file docker-compose.categories.yml -
 
 echo "Starting proxy service..."
 
-ecs-cli compose --project-name nginx --file docker-compose.nginx.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discover --aws-profile=${p};
+ecs-cli compose --project-name nginx --file docker-compose.nginx.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster LEANDA --private-dns-namespace leanda --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
