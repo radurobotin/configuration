@@ -587,8 +587,6 @@ Resources:
           echo "ECS_CLUSTER=${ECSCluster}" >> /etc/ecs/ecs.config
           sudo yum install -y aws-cfn-bootstrap
           sudo ls /opt/aws/bin
-          #test
-          /opt/aws/bin/cfn-signal -s true --stack ${AWS::StackName} --resource EcsInstanceAsg --region ${AWS::Region}
           ## Wait for EBS mount to become available
           while [ ! -e /dev/xvdf ]; do echo waiting for /dev/xvdf to attach; sleep 10; done
           # sudo mkfs -t ext4 /dev/xvdf
@@ -596,20 +594,9 @@ Resources:
           sudo mount /dev/xvdf /mnt
           sudo rm -rf /var/lib/docker/volumes
           sudo ln -s /mnt/volumes /var/lib/docker
-        
-            # #!/bin/bash -xe
-            # /opt/aws/bin/cfn-signal -s true --stack ${AWS::StackName} --resource EcsInstanceAsg --region ${AWS::Region}
-            # echo "ECS_CLUSTER=${ECSCluster}" >> /etc/ecs/ecs.config
-            # ## Wait for EBS mount to become available
-            # while [ ! -e /dev/xvdf ]; do echo waiting for /dev/xvdf to attach; sleep 10; done
-            # # sudo mkfs -t ext4 /dev/xvdf
-            # sudo mkdir -p /mnt
-            # sudo mount /dev/xvdf /mnt
-            # sudo rm -rf /var/lib/docker/volumes
-            # sudo ln -s /mnt/volumes /var/lib/docker
-            
+          #test
+          /opt/aws/bin/cfn-signal -s true --stack ${AWS::StackName} --resource EcsInstanceAsg --region ${AWS::Region}
           
-
   EcsInstanceAsg:
     Condition: LaunchInstances
     Type: AWS::AutoScaling::AutoScalingGroup
