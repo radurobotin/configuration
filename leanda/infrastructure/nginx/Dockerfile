@@ -2,6 +2,7 @@ FROM nginx:1.16.1-alpine
 
 ## Remove default nginx website
 RUN rm -rf /usr/share/nginx/html/*
+COPY index.html /usr/share/nginx/html
 
 ## Copy our default nginx config template
 COPY default.conf.template /etc/nginx/conf.d/
