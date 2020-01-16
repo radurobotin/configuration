@@ -323,7 +323,8 @@ Resources:
   ECSCLUSTER:
     Type: AWS::ECS::Cluster
     Properties: 
-      ClusterName: !Ref ECSCluster
+#      ClusterName: !Ref ECSCluster
+      ClusterName: !Ref AWS::StackName
 
   Vpc:
     Condition: CreateVpcResources
@@ -584,7 +585,7 @@ Resources:
       UserData: 
         'Fn::Base64': !Sub |
           #!/bin/bash -ex
-          echo "ECS_CLUSTER=${ECSCluster}" >> /etc/ecs/ecs.config
+          echo "ECS_CLUSTER=${AWS::StackName}" >> /etc/ecs/ecs.config
           sudo yum install -y aws-cfn-bootstrap
           sudo ls /opt/aws/bin
           ## Wait for EBS mount to become available
@@ -594,7 +595,7 @@ Resources:
           sudo mount /dev/xvdf /mnt
           sudo rm -rf /var/lib/docker/volumes
           sudo ln -s /mnt/volumes /var/lib/docker
-          #test
+          #notify CF Stack that the instance is up and running, so the process can continue
           /opt/aws/bin/cfn-signal -s true --stack ${AWS::StackName} --resource EcsInstanceAsg --region ${AWS::Region}
           
   EcsInstanceAsg:
@@ -626,8 +627,54 @@ Resources:
       DesiredCapacity: !Ref 'AsgMaxSize'
       Tags:
         - Key: Name
-          Value: ECS Instance - LEANDA
+          Value: !Join
+            - ""
+            - - EC2 Instance-
+              - Ref: AWS::StackName
           PropagateAtLaunch: true
+
+  #adding a NLB  in the Public Subnets. It will be used for registering the NGINX proxy and add a  route in route53 to access the ECS Cluster from outside
+
+  LeandaLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Type: network
+      Name: !Join
+        - ""
+        - - LoadBalancer-
+          - Ref: AWS::StackName
+      Subnets:
+        - !Ref PubSubnetAz1
+        - !Ref PubSubnetAz2
+
+#adding a listener on port 80 (leanda trafic is HTTP not HTTPS, correct?) for the NLB. This will be used for a target group
+  NginxListener:
+    DependsOn:
+      - NginxTargetGroup
+      - LeandaLoadBalancer
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+      - Type: forward
+        TargetGroupArn:
+          Ref: NginxTargetGroup
+      LoadBalancerArn:
+        Ref: LeandaLoadBalancer
+      Port: '80'
+      Protocol: TCP
+#target group for the NGIX service with minimum 1 listener
+  NginxTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name:  !Join
+        - ""
+        - - NginxTG-
+          - Ref: AWS::StackName
+      Port: 80
+      Protocol: TCP
+      TargetType: ip
+      VpcId: !Ref Vpc
+
 
 Outputs:
   VPC:
