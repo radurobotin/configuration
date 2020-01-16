@@ -62,6 +62,8 @@ echo "Generating Config files..."
 sed "s/I___SUBNET_1___I/$SUBNET1/g;s/I___SUBNET_2___I/$SUBNET2/g;s/I___FARGATE_SG___I/$FARGATE_SG/g" ecs-param.core.tmpl.yml >ecs-param.core.gen.yml
 sed "s/I___SUBNET_1___I/$SUBNET1/g;s/I___SUBNET_2___I/$SUBNET2/g;s/I___FARGATE_SG___I/$FARGATE_SG/g" ecs-param.elastic.tmpl.yml >ecs-param.elastic.gen.yml
 sed "s/I___SUBNET_1___I/$SUBNET1/g;s/I___SUBNET_2___I/$SUBNET2/g;s/I___FARGATE_SG___I/$FARGATE_SG/g" ecs-param.backend.tmpl.yml >ecs-param.backend.gen.yml
+sed "s/I___SUBNET_1___I/$SUBNET1/g;s/I___SUBNET_2___I/$SUBNET2/g;s/I___FARGATE_SG___I/$FARGATE_SG/g" ecs-param.nginx.tmpl.yml >ecs-param.nginx.gen.yml
+
 sed "s/I___DNS_NAME_SPACE___I/$PRIVATE_DNS/g" .env_tmpl >.env
 
 
