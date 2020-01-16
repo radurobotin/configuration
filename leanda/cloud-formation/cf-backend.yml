@@ -647,7 +647,7 @@ Resources:
         - !Ref PubSubnetAz1
         - !Ref PubSubnetAz2
 
-#adding a listener on port 80 (leanda trafic is HTTP not HTTPS, correct?) for the NLB. This will be used for a target group
+#adding a listener on port 80 (Leanda traffic is HTTP not HTTPS, correct?) for the NLB. This will be used for a target group
   NginxListener:
     DependsOn:
       - NginxTargetGroup
@@ -712,3 +712,10 @@ Outputs:
     Value: !Ref FargateSecurityGroup
     Export:
       Name: !Sub ${AWS::StackName}-FargateSecurityGroup
+  TargetGroupNginX:
+    Condition: CreateVpcResources
+    Description: NginX NLB Target Group
+    Value: !Ref NginxTargetGroup
+    Export:
+      Name: !Sub ${AWS::StackName}-NginxTargetGroup
+

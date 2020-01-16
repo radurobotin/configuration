@@ -6,11 +6,11 @@ services:
       entrypoint: /bin/bash
       environment:
       - OSDR_LOG_FOLDER=/logs
-      - OSDR_MONGO_DB=mongodb://mongo.leanda:27017/osdr_dev
-      - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq.leanda:5672/osdr_dev
-      - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore.leanda:1113
+      - OSDR_MONGO_DB=mongodb://mongo.${AWS_NAMESPACE}:27017/osdr_dev
+      - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq.${AWS_NAMESPACE}:5672/osdr_dev
+      - OSDR_EVENT_STORE=ConnectTo=tcp://admin:changeit@eventstore.${AWS_NAMESPACE}:1113
       - OSDR_REDIS=redis
-      command: ./wait-for-it.sh rabbitmq.leanda:5672 -t 60 -- ./Sds.Osdr.Domain.FrontEnd
+      command: ./wait-for-it.sh rabbitmq.${AWS_NAMESPACE}:5672 -t 60 -- ./Sds.Osdr.Domain.FrontEnd
       ports:
       - "11020:11020"
       logging:

@@ -27,6 +27,8 @@ DATE=`TZ=America/New_York date "+%Y-%m-%d %H:%M"`
 
 echo "AWS-CLI profile selected:  ${p}. Start date-time: ${DATE}"
 echo "Stack Name to be removed: ${s}"
+PRIVATE_DNS=$(echo $s | tr '[:upper:]' '[:lower:]')
+echo "Private DNS Domain name will be: ${PRIVATE_DNS}"
 
 echo "Removing running containers from the stack..."
 

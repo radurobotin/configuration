@@ -8,11 +8,11 @@ services:
         - TZ=EST
         - OSDR_TEMP_FILES_FOLDER=/temp
         - OSDR_LOG_FOLDER=/logs
-        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq.leanda:5672/osdr_dev
-        - OSDR_MONGO_DB=mongodb://mongo.leanda:27017/osdr_dev
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq.${AWS_NAMESPACE}:5672/osdr_dev
+        - OSDR_MONGO_DB=mongodb://mongo.${AWS_NAMESPACE}:27017/osdr_dev
         - QUEUE_PREFETCH_SIZE=9
         - EXECUTOR_THREAD_COUNT=3
-        command: ./wait-for-it.sh rabbitmq.leanda:5672 -t 60 -- ./wait-for-it.sh mongo.leanda:27017 -t 60 -- java -jar web-importer-service.jar
+        command: ./wait-for-it.sh rabbitmq.${AWS_NAMESPACE}:5672 -t 60 -- ./wait-for-it.sh mongo.${AWS_NAMESPACE}:27017 -t 60 -- java -jar web-importer-service.jar
         ports:
         - 8089:8089
  

@@ -26,6 +26,8 @@ DATE=`TZ=America/New_York date "+%Y-%m-%d %H:%M"`
 
 echo "AWS-CLI profile selected:  ${p}. Start date-time: ${DATE}"
 echo "Stack Name to be created: ${s}"
+PRIVATE_DNS=$(echo $s | tr '[:upper:]' '[:lower:]')
+echo "Private DNS Domain name will be: ${PRIVATE_DNS}"
 
 echo "Starting Cloud Formation Stack deployment ... This might take 15 minutes or more..."
 aws cloudformation deploy --stack-name ${s} --template-file cf-backend.yml --capabilities CAPABILITY_IAM --profile=${p} --region=us-east-1 || exit $?
@@ -50,51 +52,58 @@ echo "Second Public subnet: ${PUB_SUBNET2}"
 VPC=`aws cloudformation describe-stacks  --stack-name ${s} --query "Stacks[0].Outputs[]"  --profile=${p} --region=us-east-1 --output json |jq -r '.[] | select(.OutputKey=="VPC") | .OutputValue'`
 echo "VPC: ${VPC}"
 
+NGINX_TG=`aws cloudformation describe-stacks  --stack-name ${s} --query "Stacks[0].Outputs[]"  --profile=${p} --region=us-east-1 --output json |jq -r '.[] | select(.OutputKey=="TargetGroupNginX") | .OutputValue'`
+echo "NGINX_TG: ${NGINX_TG}"
+
+
+
 echo "Generating Config files..."
 
 sed "s/I___SUBNET_1___I/$SUBNET1/g;s/I___SUBNET_2___I/$SUBNET2/g;s/I___FARGATE_SG___I/$FARGATE_SG/g" ecs-param.core.tmpl.yml >ecs-param.core.gen.yml
 sed "s/I___SUBNET_1___I/$SUBNET1/g;s/I___SUBNET_2___I/$SUBNET2/g;s/I___FARGATE_SG___I/$FARGATE_SG/g" ecs-param.elastic.tmpl.yml >ecs-param.elastic.gen.yml
 sed "s/I___SUBNET_1___I/$SUBNET1/g;s/I___SUBNET_2___I/$SUBNET2/g;s/I___FARGATE_SG___I/$FARGATE_SG/g" ecs-param.backend.tmpl.yml >ecs-param.backend.gen.yml
-sed "s/I___PUB_SUBNET_1___I/$PUB_SUBNET1/g;s/I___PUB_SUBNET_2___I/$PUB_SUBNET2/g;s/I___FARGATE_SG___I/$FARGATE_SG/g" ecs-param.nginx.tmpl.yml >ecs-param.nginx.gen.yml
+sed "s/I___DNS_NAME_SPACE___I/$PRIVATE_DNS/g" .env_tmpl >.env
+
+
 
 echo "Starting infrastructure services..."
 
-ecs-cli compose --project-name elastic --file docker-compose.elastic.yml --ecs-params ecs-param.elastic.gen.yml service up --launch-type EC2 --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
-ecs-cli compose --project-name mongo --file docker-compose.mongo.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
-ecs-cli compose --project-name rabbitmq --file docker-compose.rabbit.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
-ecs-cli compose --project-name redis --file docker-compose.redis.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
-ecs-cli compose --project-name eventstore --file docker-compose.eventstore.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
+ecs-cli compose --project-name elastic --file docker-compose.elastic.yml --ecs-params ecs-param.elastic.gen.yml service up --launch-type EC2 --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
+ecs-cli compose --project-name mongo --file docker-compose.mongo.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
+ecs-cli compose --project-name rabbitmq --file docker-compose.rabbit.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
+ecs-cli compose --project-name redis --file docker-compose.redis.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
+ecs-cli compose --project-name eventstore --file docker-compose.eventstore.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
 
 echo "Starting system core services..."
 
-ecs-cli compose --project-name blob-storage-web-api --file docker-compose.blob-storage-web-api.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
-ecs-cli compose --project-name core-persistence --file docker-compose.core-persistence.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
-ecs-cli compose --project-name core-sagahost --file docker-compose.core-sagahost.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
-ecs-cli compose --project-name core-backend --file docker-compose.core-backend.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
-ecs-cli compose --project-name core-frontend --file docker-compose.core-frontend.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
-ecs-cli compose --project-name core-web-api --file docker-compose.core-web-api.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name blob-storage-web-api --file docker-compose.blob-storage-web-api.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type EC2 --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
+ecs-cli compose --project-name core-persistence --file docker-compose.core-persistence.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name core-sagahost --file docker-compose.core-sagahost.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name core-backend --file docker-compose.core-backend.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name core-frontend --file docker-compose.core-frontend.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name core-web-api --file docker-compose.core-web-api.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
 
 echo "Starting system secondary services..."
 
-ecs-cli compose --project-name imaging --file docker-compose.imaging.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
-ecs-cli compose --project-name indexing --file docker-compose.indexing.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
-ecs-cli compose --project-name office-processor --file docker-compose.office-processor.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name imaging --file docker-compose.imaging.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name indexing --file docker-compose.indexing.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name office-processor --file docker-compose.office-processor.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
 
 echo "Starting other services..."
 
-ecs-cli compose --project-name metadata-processing --file docker-compose.metadata-processing.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
-ecs-cli compose --project-name chemical-file-parser --file docker-compose.chemical-file-parser.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
-ecs-cli compose --project-name chemical-properties --file docker-compose.chemical-properties.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
-ecs-cli compose --project-name chemical-export --file docker-compose.chemical-export.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
-ecs-cli compose --project-name reaction-parser --file docker-compose.reaction-parser.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
-ecs-cli compose --project-name crystal-parser --file docker-compose.crystal-parser.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
-ecs-cli compose --project-name spectra-parser --file docker-compose.spectra-parser.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
-ecs-cli compose --project-name web-importer --file docker-compose.web-importer.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
-ecs-cli compose --project-name microscopy-metadata --file docker-compose.microscopy-metadata.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
-ecs-cli compose --project-name categories --file docker-compose.categories.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name metadata-processing --file docker-compose.metadata-processing.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name chemical-file-parser --file docker-compose.chemical-file-parser.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name chemical-properties --file docker-compose.chemical-properties.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name chemical-export --file docker-compose.chemical-export.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name reaction-parser --file docker-compose.reaction-parser.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name crystal-parser --file docker-compose.crystal-parser.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name spectra-parser --file docker-compose.spectra-parser.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name web-importer --file docker-compose.web-importer.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name microscopy-metadata --file docker-compose.microscopy-metadata.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name categories --file docker-compose.categories.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
 
 echo "Starting proxy service..."
 
-ecs-cli compose --project-name nginx --file docker-compose.nginx.yml --ecs-params ecs-param.nginx.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${s} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
+ecs-cli compose --project-name nginx --file docker-compose.nginx.yml --ecs-params ecs-param.nginx.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p} --deployment-min-healthy-percent 0 --target-group-arn ${NGINX_TG}  --container-name nginx --container-port 80;
 
 
