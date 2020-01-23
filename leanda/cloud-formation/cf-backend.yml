@@ -675,6 +675,16 @@ Resources:
       TargetType: ip
       VpcId: !Ref Vpc
 
+  Route53RecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties: 
+      Name: !Join ['', ['api.', ${AWS::StackName}, '.leanda.io']]
+      HostedZoneId: Z1Y0U0YW8WMREP
+      Type: A
+      AliasTarget: 
+        DNSName: !GetAtt LeandaLoadBalancer.DNSName
+        HostedZoneId: !GetAtt LeandaLoadBalancer.CanonicalHostedZoneIDe
+
 
 Outputs:
   VPC:
@@ -718,4 +728,18 @@ Outputs:
     Value: !Ref NginxTargetGroup
     Export:
       Name: !Sub ${AWS::StackName}-NginxTargetGroup
+  LoadBalancer:
+    Condition: CreateVpcResources
+    Description: Load Balancer DNS name
+    Value: !GetAtt LeandaLoadBalancer.DNSName
+    Export:
+      Name: !Sub ${AWS::StackName}-LeandaLoadBalancer
+  HostedZoneLB:
+    Condition: CreateVpcResources
+    Description: Load Balancer CanonicalHostedZoneID
+    Value: !GetAtt LeandaLoadBalancer.CanonicalHostedZoneID
+    Export:
+      Name: !Sub ${AWS::StackName}-LeandaLoadBalancer.CanonicalHostedZoneID
+  
+
 
