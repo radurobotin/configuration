@@ -26,6 +26,7 @@ Parameters:
   Certif:
     Type: String
     Description: The ARN of the Certificate to be used with this Distribution
+    Default: 'arn:aws:acm:us-east-1:978300727880:certificate/463812bf-01aa-400b-bd57-e2eaf4c11a72'
 
 
 Resources:
@@ -95,8 +96,9 @@ Resources:
 
   Bucket:
     Type: AWS::S3::Bucket
-    DeletionPolicy: Retain
+    #DeletionPolicy: Retain
     Properties:
+      BucketName:  !Join ['.', [!Ref 'FullDomainName', !Ref DomainName]]
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
