@@ -98,7 +98,7 @@ Resources:
     Type: AWS::S3::Bucket
     #DeletionPolicy: Retain
     Properties:
-      BucketName:  !Join ['.', [!Ref 'FullDomainName', !Ref DomainName]]
+      BucketName:  !Ref 'FullDomainName'
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
