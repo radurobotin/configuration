@@ -678,7 +678,11 @@ Resources:
   Route53RecordSet:
     Type: AWS::Route53::RecordSet
     Properties: 
-      Name: !Join ['', ['api.', ${AWS::StackName}, '.leanda.io']]
+      Name: !Join
+        - ""
+        - - 'api.'
+          - Ref: AWS::StackName
+          - '.leanda.io'
       HostedZoneId: Z1Y0U0YW8WMREP
       Type: A
       AliasTarget: 
