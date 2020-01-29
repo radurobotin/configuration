@@ -272,6 +272,12 @@ Parameters:
     Type: String
     Description: Optional - Whether to create resources only for running Fargate tasks.
     Default: 'false'
+  CertificateId:
+    Type: String
+    Description: The ARN of the Certificate to be used with this SSL offloading for NLB
+    Default: '463812bf-01aa-400b-bd57-e2eaf4c11a72'
+
+
   # UserData:
   #   Type: String
   #   Description: User data for EC2 instances. Required for EC2 launch type, ignored
@@ -647,7 +653,7 @@ Resources:
         - !Ref PubSubnetAz1
         - !Ref PubSubnetAz2
 
-#adding a listener on port 80 (Leanda traffic is HTTP not HTTPS, correct?) for the NLB. This will be used for a target group
+#adding a listener on port 80  and 443 (Leanda traffic is HTTPS and we do SSL offloading here) for the NLB. This will be used for a target group
   NginxListener:
     DependsOn:
       - NginxTargetGroup
@@ -662,7 +668,36 @@ Resources:
         Ref: LeandaLoadBalancer
       Port: '80'
       Protocol: TCP
-#target group for the NGIX service with minimum 1 listener
+
+  NginxSSLListener:
+    DependsOn:
+      - NginxTargetGroup
+      - LeandaLoadBalancer
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+      - Type: forward
+        TargetGroupArn:
+          Ref: NginxTargetGroup
+      LoadBalancerArn:
+        Ref: LeandaLoadBalancer
+      Port: '443'
+      Protocol: TLS
+      Certificates:
+        - CertificateArn: !Join
+          - ":"
+          - - arn:aws:acm
+            - !Ref AWS::Region
+            - !Ref AWS::AccountId
+            - !Join ["/", ["certificate", !Ref CertificateId ]]
+      SslPolicy: ELBSecurityPolicy-TLS-1-2-Ext-2018-06
+  #Add the Cert for the SSL offloading to 480
+  BalancerListenerCert:
+    Type: AWS::ElasticLoadBalancingV2::ListenerCertificate
+    Properties:
+      
+      ListenerArn: !Ref NginxSSLListener
+  #target group for the NGIX service with minimum 1 listener
   NginxTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
@@ -680,14 +715,15 @@ Resources:
     Properties: 
       Name: !Join
         - ""
-        - - 'api.'
+        - - 'api-'
           - Ref: AWS::StackName
           - '.leanda.io'
+        
       HostedZoneId: Z1Y0U0YW8WMREP
       Type: A
       AliasTarget: 
         DNSName: !GetAtt LeandaLoadBalancer.DNSName
-        HostedZoneId: !GetAtt LeandaLoadBalancer.CanonicalHostedZoneIDe
+        HostedZoneId: !GetAtt LeandaLoadBalancer.CanonicalHostedZoneID
 
 
 Outputs:
@@ -743,7 +779,5 @@ Outputs:
     Description: Load Balancer CanonicalHostedZoneID
     Value: !GetAtt LeandaLoadBalancer.CanonicalHostedZoneID
     Export:
-      Name: !Sub ${AWS::StackName}-LeandaLoadBalancer.CanonicalHostedZoneID
+      Name: !Sub ${AWS::StackName}-CanonicalHostedZoneID
   
-
-
