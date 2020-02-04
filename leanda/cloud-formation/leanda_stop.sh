@@ -35,7 +35,7 @@ echo "Removing running containers from the stack..."
 
 ecs-cli compose --project-name nginx --file docker-compose.nginx.yml service down --cluster ${s} --aws-profile=${p} || true
 
-# echo "Removing other services..."
+echo "Removing other services..."
 
 ecs-cli compose --project-name metadata-processing --file docker-compose.metadata-processing.yml service down --cluster ${s} --aws-profile=${p} || :
 ecs-cli compose --project-name chemical-file-parser --file docker-compose.chemical-file-parser.yml service down --cluster ${s} --aws-profile=${p} || :
