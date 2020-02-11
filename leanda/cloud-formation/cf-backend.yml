@@ -209,11 +209,11 @@ Parameters:
   SpotPrice:
     Type: Number
     Description: If greater than 0, then a EC2 Spot instance will be requested
-    Default: '0.5'
+    Default: '0.8'
   EBSSnapshotID:
     Type: String
     Description: Optional - The Snapshot ID to be used as an additional EBS volume for preserving data between instances
-    Default: 'snap-0bf6652701c91c9ee'
+    Default: 'snap-041ef9416fa91abfa'
   KeyName:
     Type: String
     Description: Optional - Name of an existing EC2 KeyPair to enable SSH access to
@@ -624,8 +624,8 @@ Resources:
         - CreateVpcResources
         - - !Join
             - ','
-            - - !Ref 'PubSubnetAz1'
-              - !Ref 'PubSubnetAz2'
+            - - !Ref 'PubSubnetAz2'
+              - !Ref 'PubSubnetAz1'
         - !Ref 'SubnetIds'
       LaunchConfigurationName: !Ref 'EcsInstanceLc'
       MinSize: '0'
