@@ -82,7 +82,7 @@ ecs-cli compose --project-name eventstore --file docker-compose.eventstore.yml -
 
 echo "Starting system core services..."
 
-ecs-cli compose --project-name blob-storage-web-api --file docker-compose.blob-storage-web-api.yml --ecs-params ecs-param.backend.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
+ecs-cli compose --project-name blob-storage-web-api --file docker-compose.blob-storage-web-api.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p} ;
 ecs-cli compose --project-name core-persistence --file docker-compose.core-persistence.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
 ecs-cli compose --project-name core-sagahost --file docker-compose.core-sagahost.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
 ecs-cli compose --project-name core-backend --file docker-compose.core-backend.yml --ecs-params ecs-param.core.gen.yml service up --launch-type FARGATE --create-log-groups --cluster ${s} --private-dns-namespace ${PRIVATE_DNS} --vpc=${VPC} --enable-service-discovery --aws-profile=${p};
